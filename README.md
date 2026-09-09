@@ -11,7 +11,7 @@ CloudLess is a backup engine — not a sync tool. Files are chunked, hashed, com
 - **Zero-knowledge encryption** — AES-256-GCM with per-file data encryption keys (DEKs) wrapped by a user key-encryption key (KEK). The server stores only ciphertext.
 - **Content-addressed deduplication** — chunks deduplicated by SHA-256 of plaintext; duplicate content uploaded once per user.
 - **Multiple storage backends** — AWS S3, Google Drive (via user OAuth), SFTP, and local filesystem for dev/test.
-- **Per-device file versioning** — linear integer versions per `(device_id, path)`. Each device is an independent namespace; files are never merged across devices.
+- **Per-device file versioning** — linear integer versions per `(backup_config_id, path)`. Each device is an independent namespace; files are never merged across devices.
 - **Self-hosted mode** — run your own server with Docker Compose. Billing is disabled; all users get full backup features.
 - **Desktop app** — Tauri + Leptos (WASM) desktop client for macOS, Linux, and Windows.
 
