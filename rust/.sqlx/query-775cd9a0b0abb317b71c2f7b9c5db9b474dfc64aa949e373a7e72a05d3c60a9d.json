@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO chunk_idempotency_keys\n                (idempotency_key, user_id, request_fingerprint, response_snapshot)\n            VALUES ($1, $2, $3, $4)\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Bytea",
+        "Jsonb"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "775cd9a0b0abb317b71c2f7b9c5db9b474dfc64aa949e373a7e72a05d3c60a9d"
+}

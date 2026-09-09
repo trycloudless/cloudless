@@ -1,0 +1,83 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT id, user_id, storage_id, local_device_id,\n                   encrypted_source_dir, source_dir_nonce, source_dir_blind_index,\n                   created_at, cleanup_type,\n                   encrypted_exclusion_config, exclusion_config_nonce\n            FROM backup_config\n            WHERE id = $1 AND user_id = $2\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "user_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "storage_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 3,
+        "name": "local_device_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 4,
+        "name": "encrypted_source_dir",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 5,
+        "name": "source_dir_nonce",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 6,
+        "name": "source_dir_blind_index",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 7,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 8,
+        "name": "cleanup_type",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 9,
+        "name": "encrypted_exclusion_config",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 10,
+        "name": "exclusion_config_nonce",
+        "type_info": "Bytea"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true
+    ]
+  },
+  "hash": "f00a12c3b915abc7002f0913b64ac9310010f40c8696fb14393737aefd2b36e5"
+}

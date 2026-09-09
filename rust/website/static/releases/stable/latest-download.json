@@ -1,0 +1,41 @@
+{
+  "version": "0.2.0",
+  "channel": "stable",
+  "published_at": "2026-05-09T00:00:00Z",
+  "release_notes_url": "",
+  "downloads": {
+    "macos-aarch64": {
+      "label": "macOS Apple Silicon",
+      "url": "",
+      "sha256": ""
+    },
+    "macos-x86_64": {
+      "label": "macOS Intel",
+      "url": "",
+      "sha256": ""
+    },
+    "windows-x86_64": {
+      "label": "Windows x64",
+      "url": "",
+      "sha256": ""
+    },
+    "linux-x86_64-appimage": {
+      "label": "Linux AppImage",
+      "url": "",
+      "sha256": ""
+    },
+    "linux-x86_64-deb": {
+      "label": "Linux .deb",
+      "url": "",
+      "sha256": ""
+    }
+  },
+  "mobile": {
+    "android": {
+      "store_url": ""
+    },
+    "ios": {
+      "store_url": ""
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                rfv.id as version_id,\n                rfv.encrypted_name,\n                rfv.name_nonce,\n                rfv.name_blind_index,\n                rfv.version,\n                rfv.size,\n                rfv.status,\n                rfv.local_file_updated_at as file_updated_at,\n                rfv.created_at\n            FROM remote_file_versions rfv\n            INNER JOIN backup_config bc\n                ON bc.user_id = rfv.user_id\n                AND bc.local_device_id = rfv.device_id\n                AND bc.storage_id = rfv.storage_id\n            WHERE rfv.user_id = $1\n              AND bc.id = $2\n              AND rfv.status = '\"MovedToBin\"'\n            ORDER BY rfv.name_blind_index, rfv.version DESC\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "version_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "encrypted_name",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 2,
+        "name": "name_nonce",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 3,
+        "name": "name_blind_index",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 4,
+        "name": "version",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "size",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 6,
+        "name": "status",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 7,
+        "name": "file_updated_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 8,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "be2b4bd0cc75ab18407c1f68db60e96970979ba07ad63718f91f02a59e57f83b"
+}

@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT chunk_id FROM remote_file_version_chunks\n                WHERE remote_file_version_id = $1 AND chunk_index = $2\n                ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "chunk_id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "c06cd346767efa10dc467058511917b66905ca263b5646da849c4749c606cc6b"
+}

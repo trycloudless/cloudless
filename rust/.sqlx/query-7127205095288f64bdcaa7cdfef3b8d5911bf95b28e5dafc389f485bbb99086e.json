@@ -1,0 +1,94 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                bc.id as config_id,\n                bc.storage_id,\n                bc.local_device_id,\n                bc.encrypted_source_dir,\n                bc.source_dir_nonce,\n                bc.display_name,\n                bc.is_active,\n                bc.cleanup_type,\n                bc.encrypted_exclusion_config,\n                bc.exclusion_config_nonce,\n                rs.storage_type,\n                rs.config,\n                ld.physical_device_id\n            FROM backup_config bc\n            JOIN remote_storages rs ON bc.storage_id = rs.id\n            JOIN local_devices ld ON bc.local_device_id = ld.id\n            WHERE bc.user_id = $1\n            ORDER BY bc.created_at DESC\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "config_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "storage_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "local_device_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 3,
+        "name": "encrypted_source_dir",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 4,
+        "name": "source_dir_nonce",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 5,
+        "name": "display_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "is_active",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 7,
+        "name": "cleanup_type",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 8,
+        "name": "encrypted_exclusion_config",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 9,
+        "name": "exclusion_config_nonce",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 10,
+        "name": "storage_type",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 11,
+        "name": "config",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 12,
+        "name": "physical_device_id",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "7127205095288f64bdcaa7cdfef3b8d5911bf95b28e5dafc389f485bbb99086e"
+}

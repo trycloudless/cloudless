@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO remote_file_version_chunks (remote_file_version_id, chunk_id, chunk_index)\n            VALUES ($1, $2, $3)\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "bd4ddf71e8222c0eadd5c992bcee5d462e9a1146a91b0951d1027c2dea504ad8"
+}

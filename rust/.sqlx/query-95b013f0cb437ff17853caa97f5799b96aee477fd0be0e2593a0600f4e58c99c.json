@@ -1,0 +1,18 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO gc_run_chunks (id, gc_run_id, chunk_id, storage_id, size, deleted_from_storage)\n                VALUES ($1, $2, $3, $4, $5, false)\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Uuid",
+        "Uuid",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "95b013f0cb437ff17853caa97f5799b96aee477fd0be0e2593a0600f4e58c99c"
+}

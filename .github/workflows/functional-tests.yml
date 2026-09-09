@@ -1,0 +1,213 @@
+name: Functional Tests (E2E)
+
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop]
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_BUILD_JOBS: 1
+  RUSTFLAGS: "-C debuginfo=0"
+  SQLX_OFFLINE: "true"
+  E2E_API_PORT: 9099
+  E2E_API_BASE_URL: http://localhost:9099
+
+jobs:
+  e2e-tests:
+    name: E2E Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    services:
+      postgres:
+        image: ${{ matrix.os == 'ubuntu-latest' && 'postgres:17' || '' }}
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: cloudless_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ----- Linux dependencies -----
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libayatana-appindicator3-dev \
+            xvfb
+
+      # ----- macOS: Postgres via Homebrew (no Docker services on macOS runners) -----
+      - name: Start PostgreSQL (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install postgresql@17
+          brew services start postgresql@17
+          sleep 3
+          createdb cloudless_e2e
+          psql -d cloudless_e2e -c "ALTER USER $(whoami) PASSWORD 'postgres';"
+
+      - name: Set DATABASE_URL (Linux)
+        if: runner.os == 'Linux'
+        run: echo "DATABASE_URL=postgres://postgres:postgres@localhost:5432/cloudless_e2e" >> "$GITHUB_ENV"
+
+      - name: Set DATABASE_URL (macOS)
+        if: runner.os == 'macOS'
+        run: echo "DATABASE_URL=postgres://$(whoami):postgres@localhost:5432/cloudless_e2e" >> "$GITHUB_ENV"
+
+      # ----- Toolchains -----
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # ----- Database migrations -----
+      - name: Install sqlx-cli
+        run: cargo install sqlx-cli --no-default-features --features postgres
+
+      - name: Run database migrations
+        working-directory: rust/api_server
+        run: sqlx migrate run --source migrations
+        env:
+          SQLX_OFFLINE: "false"
+
+      # ----- Build -----
+      - name: Install trunk
+        run: |
+          set -euo pipefail
+
+          TRUNK_VERSION="0.21.14"
+          case "${{ runner.os }}-$(uname -m)" in
+            Linux-x86_64)
+              TRUNK_TARGET="x86_64-unknown-linux-gnu"
+              ;;
+            macOS-arm64)
+              TRUNK_TARGET="aarch64-apple-darwin"
+              ;;
+            macOS-x86_64)
+              TRUNK_TARGET="x86_64-apple-darwin"
+              ;;
+            *)
+              echo "Unsupported runner for trunk binary: ${{ runner.os }} $(uname -m)"
+              exit 1
+              ;;
+          esac
+
+          curl -fsSL \
+            "https://github.com/trunk-rs/trunk/releases/download/v${TRUNK_VERSION}/trunk-${TRUNK_TARGET}.tar.gz" \
+            -o trunk.tar.gz
+          tar -xzf trunk.tar.gz
+          chmod +x trunk
+          mkdir -p "$HOME/.cargo/bin"
+          mv trunk "$HOME/.cargo/bin/trunk"
+          trunk --version
+
+      - name: Build API server
+        working-directory: rust
+        run: cargo build -p api_server
+
+      - name: Install frontend dependencies
+        working-directory: rust/leptos_ui
+        run: npm install
+
+      - name: Build CSS (Tailwind)
+        working-directory: rust/leptos_ui
+        run: npx tailwindcss -i ./input.css -o ./output.css --minify
+
+      - name: Build frontend (trunk)
+        working-directory: rust/leptos_ui
+        run: trunk build
+
+      - name: Build Tauri app with e2e feature
+        working-directory: rust
+        run: cargo build -p cloudless_tauri --features e2e
+
+      # ----- Start API server -----
+      - name: Start API server
+        working-directory: rust
+        run: ./target/debug/api_server &
+        env:
+          JWT_SECRET: e2e-test-secret
+          HOST: 0.0.0.0
+          PORT: ${{ env.E2E_API_PORT }}
+          FRONTEND_BASE_URL: ${{ env.E2E_API_BASE_URL }}
+          EMAIL_PROVIDER: log
+          SES_ENABLED: "false"
+
+      - name: Wait for API server
+        run: |
+          for i in $(seq 1 30); do
+            if curl -sf ${{ env.E2E_API_BASE_URL }}/health > /dev/null 2>&1; then
+              echo "API server is ready (took ${i}s)"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "API server failed to start within 30s"
+          exit 1
+
+      # ----- E2E tests -----
+      - name: Create test data files
+        run: |
+          mkdir -p /tmp/cloudless-e2e-backup/subdir
+          mkdir -p /tmp/cloudless-e2e-local-storage
+          echo "Hello from e2e test - file 1" > /tmp/cloudless-e2e-backup/test-file-1.txt
+          echo "Hello from e2e test - file 2" > /tmp/cloudless-e2e-backup/test-file-2.txt
+          echo '{"key": "value", "nested": {"a": 1}}' > /tmp/cloudless-e2e-backup/test-data.json
+          dd if=/dev/urandom bs=1024 count=64 of=/tmp/cloudless-e2e-backup/test-binary.bin 2>/dev/null
+          echo "Nested file in subdirectory" > /tmp/cloudless-e2e-backup/subdir/nested-file.txt
+
+      - name: Install E2E dependencies
+        working-directory: e2e
+        run: npm ci
+
+      - name: Run E2E tests (Linux)
+        if: runner.os == 'Linux'
+        working-directory: e2e
+        run: xvfb-run -a npm test
+
+      - name: Run E2E tests (macOS)
+        if: runner.os == 'macOS'
+        working-directory: e2e
+        run: npm test
+
+      # ----- Artifacts on failure -----
+      - name: Upload test videos
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-videos-${{ matrix.os }}
+          path: e2e/_results_/
+          retention-days: 14
+
+      - name: Upload screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-screenshots-${{ matrix.os }}
+          path: e2e/screenshots/
+          retention-days: 14

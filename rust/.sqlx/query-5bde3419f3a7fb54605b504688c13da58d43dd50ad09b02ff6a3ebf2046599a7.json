@@ -1,0 +1,71 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                rfv.id as version_id,\n                rfv.encrypted_name,\n                rfv.name_nonce,\n                rfv.name_blind_index,\n                rfv.version,\n                rfv.size,\n                rfv.status,\n                rfv.local_file_updated_at as file_updated_at,\n                rfv.created_at\n            FROM remote_file_versions rfv\n            WHERE rfv.user_id = $1\n              AND rfv.backup_config_id = $2\n              AND rfv.status = '\"MovedToBin\"'\n            ORDER BY rfv.name_blind_index, rfv.version DESC\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "version_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "encrypted_name",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 2,
+        "name": "name_nonce",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 3,
+        "name": "name_blind_index",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 4,
+        "name": "version",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "size",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 6,
+        "name": "status",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 7,
+        "name": "file_updated_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 8,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "5bde3419f3a7fb54605b504688c13da58d43dd50ad09b02ff6a3ebf2046599a7"
+}

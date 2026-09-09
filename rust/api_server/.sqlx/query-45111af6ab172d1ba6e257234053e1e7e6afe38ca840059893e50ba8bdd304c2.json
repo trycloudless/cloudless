@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                DELETE FROM remote_file_version_chunks\n                WHERE remote_file_version_id = ANY($1)\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "UuidArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "45111af6ab172d1ba6e257234053e1e7e6afe38ca840059893e50ba8bdd304c2"
+}

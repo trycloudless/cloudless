@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO gc_run_versions (id, gc_run_id, file_version_id, encrypted_name, name_nonce, version, size)\n                VALUES ($1, $2, $3, $4, $5, $6, $7)\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Uuid",
+        "Bytea",
+        "Bytea",
+        "Int4",
+        "Int8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "e8d64a428183a8e8d30052029140ea8b83ae6bf5ced7a234d9ff699dbb231364"
+}

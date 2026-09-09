@@ -1,0 +1,40 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT chunk_id, storage_id, size, deleted_from_storage\n            FROM gc_run_chunks\n            WHERE gc_run_id = $1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "chunk_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "storage_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "size",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "deleted_from_storage",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "fb2497176afda81f84bf98500e6c98b0fbacf02b3e46911f961bc290b67efeca"
+}

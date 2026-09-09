@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE backup_jobs\n            SET cleanup_files_deleted = cleanup_files_deleted + $2,\n                cleanup_bytes_freed   = cleanup_bytes_freed   + $3\n            WHERE id = $1\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4",
+        "Int8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "72c516623431a496f1b32d85593ebc4d6dc9135cd81df50d3a9978191eecda5c"
+}

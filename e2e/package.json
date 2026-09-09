@@ -1,0 +1,19 @@
+{
+  "name": "cloudless-e2e",
+  "private": true,
+  "scripts": {
+    "test": "wdio run wdio.conf.ts",
+    "e2e:up": "docker compose -f docker-compose.e2e.yml up -d --build --wait",
+    "e2e:down": "docker compose -f docker-compose.e2e.yml down -v",
+    "e2e:run": "npm run e2e:up && npm test; npm run e2e:down"
+  },
+  "devDependencies": {
+    "@wdio/cli": "^9",
+    "@wdio/local-runner": "^9",
+    "@wdio/mocha-framework": "^9",
+    "@wdio/spec-reporter": "^9",
+    "ts-node": "^10",
+    "typescript": "^5",
+    "wdio-video-reporter": "^6.2.0"
+  }
+}

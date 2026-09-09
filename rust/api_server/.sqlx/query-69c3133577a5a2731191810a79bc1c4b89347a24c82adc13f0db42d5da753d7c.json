@@ -1,0 +1,18 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO restore_jobs (id, user_id, backup_config_id, overwrite_behavior, status, started_at)\n            VALUES ($1, $2, $3, $4, 'running', $5)\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Uuid",
+        "Text",
+        "Timestamptz"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "69c3133577a5a2731191810a79bc1c4b89347a24c82adc13f0db42d5da753d7c"
+}

@@ -1,0 +1,46 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                p.policy_type,\n                p.title,\n                pv.version,\n                pv.content,\n                pv.published_at\n            FROM policies p\n            INNER JOIN policy_versions pv ON pv.policy_id = p.id\n            WHERE p.policy_type = $1\n              AND pv.status = 'published'\n            ORDER BY pv.version DESC\n            LIMIT 1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "policy_type",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "title",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "version",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "content",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "published_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "5c5fd4cabfe8616c1c741af67667f32564b1541a37510c5d476c2f4cf7ea55db"
+}

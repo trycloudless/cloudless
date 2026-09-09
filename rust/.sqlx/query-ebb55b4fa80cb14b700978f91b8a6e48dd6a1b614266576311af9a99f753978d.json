@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO remote_file_versions\n                (id, user_id, backup_config_id, device_id, storage_id, encrypted_name, name_nonce,\n                 name_blind_index, version, size, status, status_history, local_file_updated_at)\n            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Uuid",
+        "Uuid",
+        "Uuid",
+        "Bytea",
+        "Bytea",
+        "Bytea",
+        "Int4",
+        "Int8",
+        "Jsonb",
+        "Jsonb",
+        "Timestamptz"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "ebb55b4fa80cb14b700978f91b8a6e48dd6a1b614266576311af9a99f753978d"
+}

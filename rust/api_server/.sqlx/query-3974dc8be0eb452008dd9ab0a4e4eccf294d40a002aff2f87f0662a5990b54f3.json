@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE remote_storages\n            SET status = $1, updated_at = now()\n            WHERE id = $2 AND user_id = $3\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "3974dc8be0eb452008dd9ab0a4e4eccf294d40a002aff2f87f0662a5990b54f3"
+}

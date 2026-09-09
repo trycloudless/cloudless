@@ -1,0 +1,14 @@
+[workspace]
+resolver = "3"
+members = [
+    "core",
+    "tauri",
+    "tauri-plugin-folder-picker",
+    "cli",
+    "api_server",
+    "api_types",
+    "playground",
+    "shared_ui",
+    "leptos_ui",
+]
+# website moved to cloudless-hosting (private repo)

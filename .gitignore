@@ -1,0 +1,49 @@
+# Rust
+/target/
+/rust/target/
+**/*.rs.bk
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+mvs-development_accessKeys.csv
+rust/leptos_ui/dist/
+rust/leptos_ui/dist
+rust/leptos_ui/node_modules/
+rust/leptos_ui/output.css
+rust/website/node_modules/
+
+# E2E tests
+e2e/node_modules/
+e2e/dist/
+e2e/_results_/
+e2e/screenshots/
+e2e/_logs/
+
+# Maestro debug output
+.maestro-debug/
+
+# Terraform (infra lives in cloudless-hosting private repo)
+infra/
+**/.terraform/
+*.tfstate
+*.tfstate.backup
+
+# Tauri generated schemas (regenerated automatically on cargo build)
+rust/tauri/gen/schemas/
+
+# Private / credentials
+docs/private/
+docs/business/
+docs/features/
+docs/policies/
+docs/sales-and-mark/
+**/.env
+
+# Claude runtime
+.claude/scheduled_tasks.lock

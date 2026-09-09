@@ -1,0 +1,7 @@
+# Ignore Android build artifacts from plugins that trigger rebuild loops
+# during `cargo tauri ios dev` (and vice versa for android dev).
+**/android/**/build/
+**/build/generated/
+**/build/intermediates/
+**/build/tmp/
+**/build/outputs/

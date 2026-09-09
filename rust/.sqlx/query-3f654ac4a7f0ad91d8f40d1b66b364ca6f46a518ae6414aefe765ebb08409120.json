@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT request_fingerprint, response_snapshot\n            FROM chunk_idempotency_keys\n            WHERE idempotency_key = $1\n            FOR UPDATE\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "request_fingerprint",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 1,
+        "name": "response_snapshot",
+        "type_info": "Jsonb"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "3f654ac4a7f0ad91d8f40d1b66b364ca6f46a518ae6414aefe765ebb08409120"
+}

@@ -1,0 +1,58 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                (SELECT COUNT(DISTINCT name_blind_index)\n                 FROM remote_file_versions\n                 WHERE user_id = $1) AS \"total_files_protected!\",\n                COALESCE((SELECT SUM(size)\n                 FROM remote_file_versions\n                 WHERE user_id = $1), 0)::BIGINT AS \"total_original_bytes!\",\n                COALESCE((SELECT SUM(size)\n                 FROM chunks\n                 WHERE user_id = $1), 0)::BIGINT AS \"total_uploaded_bytes!\",\n                GREATEST(0,\n                    COALESCE((SELECT SUM(size) FROM remote_file_versions WHERE user_id = $1), 0) -\n                    COALESCE((SELECT SUM(size) FROM chunks WHERE user_id = $1), 0)\n                )::BIGINT AS \"total_deduplicated_bytes!\",\n                (SELECT COUNT(*) FROM backup_config WHERE user_id = $1 AND is_active = true) AS \"active_backup_configs!\",\n                (SELECT COUNT(*) FROM backup_jobs WHERE user_id = $1) AS \"total_backup_jobs!\",\n                (SELECT COUNT(*) FROM restore_jobs WHERE user_id = $1) AS \"total_restore_jobs!\"\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "total_files_protected!",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 1,
+        "name": "total_original_bytes!",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 2,
+        "name": "total_uploaded_bytes!",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 3,
+        "name": "total_deduplicated_bytes!",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 4,
+        "name": "active_backup_configs!",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 5,
+        "name": "total_backup_jobs!",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 6,
+        "name": "total_restore_jobs!",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "74e0053cae271d957d9c51e4e24cded72f3239512a0ee24f9c844025279f5d05"
+}

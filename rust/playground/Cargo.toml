@@ -1,0 +1,20 @@
+[package]
+name = "playground"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "user_signup"
+path = "src/user_signup.rs"
+
+[[bin]]
+name = "start_backup"
+path = "src/start_backup.rs"
+
+[dependencies]
+cloudless_core = { path = "../core" }
+api_types = { path = "../api_types" }
+tokio = { version = "1", features = ["full"] }
+argon2 = { version = "0.5.3", features = ["std"] }
+serde_json = "1"
+url = "2"

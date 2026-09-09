@@ -1,0 +1,40 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT c.id, c.storage_id, c.size, c.storage_meta\n            FROM chunks c\n            WHERE c.user_id = $1\n              AND NOT EXISTS (\n                  SELECT 1 FROM remote_file_version_chunks rvc\n                  WHERE rvc.chunk_id = c.id\n              )\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "storage_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "size",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "storage_meta",
+        "type_info": "Jsonb"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "e5e9d0a8469dd0b4c68e9c730794e6dba1541daa4e0dbdd8eba1fce20f93e7bc"
+}

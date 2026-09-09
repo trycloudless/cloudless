@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:17
+    ports:
+      - "54322:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cloudless_e2e
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  api_server:
+    build:
+      context: ../rust
+      dockerfile: api_server/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "9099:9000"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/cloudless_e2e
+      JWT_SECRET: e2e-test-secret
+      HOST: 0.0.0.0
+      PORT: 9000
+      FRONTEND_BASE_URL: http://localhost:9099
+      EMAIL_PROVIDER: log
+      SES_ENABLED: "false"
+      RUST_LOG: api_server=info

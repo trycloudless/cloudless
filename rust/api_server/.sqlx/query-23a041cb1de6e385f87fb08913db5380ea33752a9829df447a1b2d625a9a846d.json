@@ -1,0 +1,29 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                p.max_skips,\n                COALESCE(\n                    (SELECT COUNT(*)::int FROM user_policy_skips\n                     WHERE user_id = $1 AND policy_version_id = $2),\n                    0\n                ) as \"times_skipped!\"\n            FROM policy_versions pv\n            INNER JOIN policies p ON p.id = pv.policy_id\n            WHERE pv.id = $2\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "max_skips",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "times_skipped!",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      null
+    ]
+  },
+  "hash": "23a041cb1de6e385f87fb08913db5380ea33752a9829df447a1b2d625a9a846d"
+}

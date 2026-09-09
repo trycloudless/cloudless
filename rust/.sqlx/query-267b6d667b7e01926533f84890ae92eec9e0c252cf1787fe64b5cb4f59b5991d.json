@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO restore_job_files (id, job_id, remote_file_version_id, encrypted_name, name_nonce, blind_index, original_size, status)\n            VALUES ($1, $2, $3, $4, $5, $6, $7, 'pending')\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Uuid",
+        "Bytea",
+        "Bytea",
+        "Bytea",
+        "Int8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "267b6d667b7e01926533f84890ae92eec9e0c252cf1787fe64b5cb4f59b5991d"
+}

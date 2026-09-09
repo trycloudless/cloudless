@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE chunks\n            SET storage_meta = $1\n            WHERE id = $2 AND user_id = $3\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Jsonb",
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "b4c16b81086916a44cee6d466c9cbe96d67f11299ee16a267b1a10c0672d95ba"
+}

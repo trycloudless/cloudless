@@ -1,0 +1,13 @@
+[package]
+name = "shared_ui"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+leptos = "0.8"
+chrono = { version = "0.4", features = ["serde"] }
+web-sys = { version = "0.3", features = ["Document", "HtmlElement", "Window", "Storage", "MediaQueryList"], optional = true }
+wasm-bindgen = { version = "0.2", optional = true }
+
+[features]
+theme = ["web-sys", "wasm-bindgen"]

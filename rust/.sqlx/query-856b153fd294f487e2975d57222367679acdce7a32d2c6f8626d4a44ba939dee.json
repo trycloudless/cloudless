@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE gc_runs\n            SET chunks_deleted = $1,\n                storage_freed_bytes = $2,\n                status = 'completed',\n                completed_at = now()\n            WHERE id = $3 AND user_id = $4\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int8",
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "856b153fd294f487e2975d57222367679acdce7a32d2c6f8626d4a44ba939dee"
+}

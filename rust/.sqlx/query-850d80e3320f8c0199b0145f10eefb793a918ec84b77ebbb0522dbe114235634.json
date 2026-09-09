@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE remote_file_versions\n            SET status = $1,\n                status_history = status_history || jsonb_build_array(jsonb_build_array(to_jsonb(now()), $1::jsonb))\n            WHERE id = $2\n              AND user_id = $3\n              AND (status = '\"VerifiedOnRemoteStorage\"' OR status = '\"Restored\"')\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Jsonb",
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "850d80e3320f8c0199b0145f10eefb793a918ec84b77ebbb0522dbe114235634"
+}

@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                    SELECT blind_index\n                    FROM backup_job_files\n                    WHERE job_id = $1 AND status = 'completed'\n                    ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "blind_index",
+        "type_info": "Bytea"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "cbf07f448b02ff75e99cc277f663cd2514bb72846a6e515ebd625b35a0edeab3"
+}

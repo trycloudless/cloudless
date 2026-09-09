@@ -1,0 +1,27 @@
+[package]
+name = "website"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+api_types = { path = "../api_types" }
+shared_ui = { path = "../shared_ui" }
+cloudless_core = { path = "../core" }
+leptos = { version = "0.8", features = ["ssr"] }
+axum = { version = "0.8", features = ["macros", "multipart"] }
+axum-extra = { version = "0.10", features = ["cookie"] }
+tokio = { version = "1.37.0", features = ["full"] }
+tower-http = { version = "0.6", features = ["fs", "trace"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+uuid = { version = "1.8", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+anyhow = "1.0"
+url = "2.5.8"
+reqwest = { version = "0.13", features = ["json", "multipart"] }
+pulldown-cmark = "0.12"
+ammonia = "4"
+time = "0.3"
+base64 = "0.22"

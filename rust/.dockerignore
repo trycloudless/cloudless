@@ -1,0 +1,11 @@
+target/
+node_modules/
+.git/
+.github/
+.agent/
+.claude/
+.maestro/
+.maestro-debug/
+ai_impl_plans/
+docs/
+e2e/

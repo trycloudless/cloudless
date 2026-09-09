@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE remote_file_versions rfv\n            SET status = $1,\n                status_history = rfv.status_history || jsonb_build_array(jsonb_build_array(to_jsonb(now()), $1::jsonb))\n            FROM backup_config bc\n            WHERE rfv.user_id = $2\n              AND rfv.name_blind_index = $3\n              AND bc.id = $4\n              AND bc.user_id = rfv.user_id\n              AND bc.local_device_id = rfv.device_id\n              AND bc.storage_id = rfv.storage_id\n              AND (rfv.status = '\"VerifiedOnRemoteStorage\"' OR rfv.status = '\"Restored\"')\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Jsonb",
+        "Uuid",
+        "Bytea",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "53e8c0d9ee373868dba8265c6633459148b58fd99726c653c1df0b4e2e8ad5bf"
+}

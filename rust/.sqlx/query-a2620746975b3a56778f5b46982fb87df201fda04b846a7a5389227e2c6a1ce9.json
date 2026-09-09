@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO encrypted_deks (id, user_id, key_type, encrypted_key, nonce, salt, algorithm)\n            VALUES ($1, $2, $3, $4, $5, $6, $7)\n            ON CONFLICT (user_id, key_type) DO UPDATE SET\n                encrypted_key = EXCLUDED.encrypted_key,\n                nonce = EXCLUDED.nonce,\n                salt = EXCLUDED.salt,\n                algorithm = EXCLUDED.algorithm,\n                updated_at = now()\n            RETURNING id\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Text",
+        "Bytea",
+        "Bytea",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "a2620746975b3a56778f5b46982fb87df201fda04b846a7a5389227e2c6a1ce9"
+}

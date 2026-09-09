@@ -1,0 +1,19 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO backup_job_files (id, job_id, encrypted_name, name_nonce, blind_index, original_size, status)\n            VALUES ($1, $2, $3, $4, $5, $6, 'uploading')\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Bytea",
+        "Bytea",
+        "Bytea",
+        "Int8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "65f8d838664517cd5524c34f1de6aefc022fec83be5ebaf0f5c6f2f533c65b4b"
+}

@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                UPDATE gc_run_chunks\n                SET deleted_from_storage = true\n                WHERE gc_run_id = $1 AND chunk_id = ANY($2)\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "UuidArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "e1dc8afdfecd0079b9f2ce018e00c5bc3f2df2de925b536600c665a808375fab"
+}

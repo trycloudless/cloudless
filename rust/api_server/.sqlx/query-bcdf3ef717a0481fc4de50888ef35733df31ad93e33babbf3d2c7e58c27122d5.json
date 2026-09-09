@@ -1,0 +1,71 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT id, user_id, storage_id, local_device_id,\n                   encrypted_source_dir, source_dir_nonce, source_dir_blind_index,\n                   created_at, cleanup_type\n            FROM backup_config\n            WHERE id = $1 AND user_id = $2\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "user_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "storage_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 3,
+        "name": "local_device_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 4,
+        "name": "encrypted_source_dir",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 5,
+        "name": "source_dir_nonce",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 6,
+        "name": "source_dir_blind_index",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 7,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 8,
+        "name": "cleanup_type",
+        "type_info": "Jsonb"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "bcdf3ef717a0481fc4de50888ef35733df31ad93e33babbf3d2c7e58c27122d5"
+}

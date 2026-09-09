@@ -1,0 +1,70 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT id, backup_config_id, overwrite_behavior, status,\n                   total_files, original_bytes, restored_bytes, started_at, completed_at\n            FROM restore_jobs\n            WHERE user_id = $1\n            ORDER BY started_at DESC\n            LIMIT 1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "backup_config_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "overwrite_behavior",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "total_files",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "original_bytes",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 6,
+        "name": "restored_bytes",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 7,
+        "name": "started_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 8,
+        "name": "completed_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "3814c8dcf04418c07baf39ae506edf658dfa820e3f844be959061fb9a5685eb6"
+}

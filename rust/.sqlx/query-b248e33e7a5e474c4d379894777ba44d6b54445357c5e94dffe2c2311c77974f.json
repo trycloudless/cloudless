@@ -1,0 +1,65 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT id, status, versions_deleted, chunks_deleted,\n                   storage_freed_bytes, error_message, started_at, completed_at\n            FROM gc_runs\n            WHERE user_id = $1\n            ORDER BY started_at DESC\n            LIMIT $2\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "versions_deleted",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "chunks_deleted",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "storage_freed_bytes",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 5,
+        "name": "error_message",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "started_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 7,
+        "name": "completed_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true
+    ]
+  },
+  "hash": "b248e33e7a5e474c4d379894777ba44d6b54445357c5e94dffe2c2311c77974f"
+}

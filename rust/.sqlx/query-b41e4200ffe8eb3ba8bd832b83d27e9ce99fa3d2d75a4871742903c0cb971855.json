@@ -1,0 +1,107 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT id, backup_config_id, overwrite_behavior,\n                   destination_type, destination_storage_id, destination_prefix,\n                   status,\n                   total_files, total_files_succeeded, total_files_failed,\n                   original_bytes, restored_bytes, error_message, started_at, completed_at\n            FROM restore_jobs\n            WHERE id = $1 AND user_id = $2\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "backup_config_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "overwrite_behavior",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "destination_type",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "destination_storage_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 5,
+        "name": "destination_prefix",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "total_files",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 8,
+        "name": "total_files_succeeded",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 9,
+        "name": "total_files_failed",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 10,
+        "name": "original_bytes",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 11,
+        "name": "restored_bytes",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 12,
+        "name": "error_message",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 13,
+        "name": "started_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 14,
+        "name": "completed_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true
+    ]
+  },
+  "hash": "b41e4200ffe8eb3ba8bd832b83d27e9ce99fa3d2d75a4871742903c0cb971855"
+}

@@ -1,0 +1,11 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path opacity="0.3" d="M56 56H128L144 72V144H56V56Z" stroke="#0A2E52" stroke-width="5" stroke-linejoin="round"/>
+<path opacity="0.3" d="M128 56V72H144" stroke="#0A2E52" stroke-width="5" stroke-linejoin="round"/>
+<path opacity="0.6" d="M44 44H116L132 60V132H44V44Z" stroke="#0A2E52" stroke-width="5" stroke-linejoin="round"/>
+<path opacity="0.6" d="M116 44V60H132" stroke="#0A2E52" stroke-width="5" stroke-linejoin="round"/>
+<path d="M32 32H104L120 48V120H32V32Z" fill="#0A2E52"/>
+<path opacity="0.6" d="M104 32V48H120" fill="#2DD4BF"/>
+<path d="M93.5 64H50.5C49.1193 64 48 65.1193 48 66.5C48 67.8807 49.1193 69 50.5 69H93.5C94.8807 69 96 67.8807 96 66.5C96 65.1193 94.8807 64 93.5 64Z" fill="#2DD4BF"/>
+<path opacity="0.6" d="M85.5 76H50.5C49.1193 76 48 77.1193 48 78.5C48 79.8807 49.1193 81 50.5 81H85.5C86.8807 81 88 79.8807 88 78.5C88 77.1193 86.8807 76 85.5 76Z" fill="#2DD4BF"/>
+<path opacity="0.4" d="M77.5 88H50.5C49.1193 88 48 89.1193 48 90.5C48 91.8807 49.1193 93 50.5 93H77.5C78.8807 93 80 91.8807 80 90.5C80 89.1193 78.8807 88 77.5 88Z" fill="#2DD4BF"/>
+</svg>

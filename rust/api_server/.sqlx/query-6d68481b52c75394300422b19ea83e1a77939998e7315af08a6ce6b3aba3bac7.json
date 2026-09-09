@@ -1,0 +1,58 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                pv.id as policy_version_id,\n                p.policy_type,\n                p.title as policy_title,\n                pv.version,\n                pv.content,\n                p.max_skips,\n                COALESCE(skip_counts.times_skipped, 0)::int as \"times_skipped!\"\n            FROM policies p\n            INNER JOIN LATERAL (\n                SELECT id, version, content\n                FROM policy_versions\n                WHERE policy_id = p.id AND status = 'published'\n                ORDER BY version DESC\n                LIMIT 1\n            ) pv ON true\n            LEFT JOIN user_policy_acceptances upa\n                ON upa.policy_version_id = pv.id AND upa.user_id = $1\n            LEFT JOIN (\n                SELECT policy_version_id, COUNT(*)::int as times_skipped\n                FROM user_policy_skips\n                WHERE user_id = $1\n                GROUP BY policy_version_id\n            ) skip_counts ON skip_counts.policy_version_id = pv.id\n            WHERE p.is_required = true AND upa.id IS NULL\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "policy_version_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "policy_type",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "policy_title",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "version",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "content",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "max_skips",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "times_skipped!",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "6d68481b52c75394300422b19ea83e1a77939998e7315af08a6ce6b3aba3bac7"
+}

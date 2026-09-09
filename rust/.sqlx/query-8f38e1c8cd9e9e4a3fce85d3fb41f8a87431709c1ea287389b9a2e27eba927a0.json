@@ -1,0 +1,25 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO remote_file_version_chunks (remote_file_version_id, chunk_id, chunk_index, user_id)\n            VALUES ($1, $2, $3, $4)\n            ON CONFLICT (remote_file_version_id, chunk_index) DO NOTHING\n            RETURNING chunk_id\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "chunk_id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Int4",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "8f38e1c8cd9e9e4a3fce85d3fb41f8a87431709c1ea287389b9a2e27eba927a0"
+}

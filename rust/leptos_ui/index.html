@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en" data-theme="dark" class="h-full w-full">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+        />
+        <title>CloudLess</title>
+        <base href="./" />
+
+        <!-- Theme init: runs before paint to avoid flash -->
+        <script>
+            (function () {
+                var t = localStorage.getItem("theme");
+                if (!t || t === "auto")
+                    t = matchMedia("(prefers-color-scheme:dark)").matches
+                        ? "dark"
+                        : "light";
+                document.documentElement.setAttribute("data-theme", t);
+            })();
+            (function () {
+                var ua = navigator.userAgent;
+                var p = /iPad|iPhone|iPod|Mac/.test(ua) ? "ios" : "android";
+                document.documentElement.setAttribute("data-platform", p);
+            })();
+        </script>
+
+        <!-- Pre-compiled Tailwind CSS (includes design tokens from shared_ui) -->
+        <link data-trunk rel="css" href="./output.css" />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap"
+            rel="stylesheet"
+        />
+    </head>
+
+    <body
+        class="h-full w-full min-h-screen text-text-primary font-sans overflow-x-hidden"
+    ></body>
+</html>

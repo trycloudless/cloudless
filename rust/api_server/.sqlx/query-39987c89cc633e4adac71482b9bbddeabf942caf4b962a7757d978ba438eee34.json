@@ -1,0 +1,76 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT id, encrypted_name, name_nonce, blind_index, original_size, restored_size,\n                   total_chunks, chunks_completed, status, error_message\n            FROM restore_job_files\n            WHERE job_id = $1\n            ORDER BY blind_index ASC\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "encrypted_name",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 2,
+        "name": "name_nonce",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 3,
+        "name": "blind_index",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 4,
+        "name": "original_size",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 5,
+        "name": "restored_size",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 6,
+        "name": "total_chunks",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "chunks_completed",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 8,
+        "name": "status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 9,
+        "name": "error_message",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "39987c89cc633e4adac71482b9bbddeabf942caf4b962a7757d978ba438eee34"
+}

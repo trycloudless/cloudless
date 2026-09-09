@@ -1,0 +1,78 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                rfv.id,\n                rfv.device_id,\n                rfv.encrypted_name,\n                rfv.name_nonce,\n                rfv.name_blind_index,\n                rfv.version,\n                rfv.size,\n                rfv.status,\n                rfv.local_file_updated_at,\n                rfv.created_at\n            FROM remote_file_versions rfv\n            WHERE rfv.user_id = $1\n              AND rfv.backup_config_id = $2\n              AND rfv.status NOT IN ('\"MovedToBin\"', '\"Deleted\"')\n              AND (\n                rfv.created_at >= COALESCE($3, '-infinity'::timestamptz)\n                OR rfv.version = (\n                    SELECT MAX(rfv2.version)\n                    FROM remote_file_versions rfv2\n                    WHERE rfv2.backup_config_id = rfv.backup_config_id\n                      AND rfv2.name_blind_index = rfv.name_blind_index\n                      AND rfv2.status NOT IN ('\"MovedToBin\"', '\"Deleted\"')\n                )\n              )\n            ORDER BY rfv.name_blind_index, rfv.version DESC\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "device_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "encrypted_name",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 3,
+        "name": "name_nonce",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 4,
+        "name": "name_blind_index",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 5,
+        "name": "version",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "size",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 7,
+        "name": "status",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 8,
+        "name": "local_file_updated_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 9,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Timestamptz"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "a667dbc286dc78b6f6b1bb0db184a1b831fcbe483f30e7ac897e4ae9f9e2aaf8"
+}

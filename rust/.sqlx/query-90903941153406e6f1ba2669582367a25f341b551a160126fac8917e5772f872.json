@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE backup_config\n            SET encrypted_exclusion_config = $1, exclusion_config_nonce = $2\n            WHERE id = $3 AND user_id = $4\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Bytea",
+        "Bytea",
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "90903941153406e6f1ba2669582367a25f341b551a160126fac8917e5772f872"
+}

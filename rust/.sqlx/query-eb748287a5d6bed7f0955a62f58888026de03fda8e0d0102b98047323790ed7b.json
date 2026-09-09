@@ -1,0 +1,46 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT rfv.id, rfv.encrypted_name, rfv.name_nonce, rfv.version, rfv.size\n            FROM remote_file_versions rfv\n            JOIN users u ON u.id = rfv.user_id\n            WHERE rfv.user_id = $1\n              AND rfv.status = '\"MovedToBin\"'\n              AND (\n                  SELECT MAX((elem->>0)::timestamptz)\n                  FROM jsonb_array_elements(rfv.status_history) AS elem\n                  WHERE elem->1 = '\"MovedToBin\"'\n              ) < now() - (u.bin_retention_days || ' days')::interval\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "encrypted_name",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 2,
+        "name": "name_nonce",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 3,
+        "name": "version",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "size",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "eb748287a5d6bed7f0955a62f58888026de03fda8e0d0102b98047323790ed7b"
+}

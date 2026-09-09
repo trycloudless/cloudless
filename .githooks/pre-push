@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Pre-push hook: runs the same checks as unit-integration-tests.yml CI workflow.
+# Catches failures locally before they hit GitHub Actions.
+
+set -euo pipefail
+
+RUST_DIR="$(git rev-parse --show-toplevel)/rust"
+
+echo "=== pre-push: running CI checks ==="
+
+cd "$RUST_DIR"
+
+echo ""
+echo "[1/2] cargo check -p api_server"
+SQLX_OFFLINE=true cargo check -p api_server
+
+echo ""
+echo "[2/2] cargo test -p cloudless_core --lib"
+SQLX_OFFLINE=true cargo test -p cloudless_core --lib
+
+echo ""
+echo "=== pre-push: all checks passed ==="

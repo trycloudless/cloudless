@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE restore_jobs\n            SET status = $2,\n                error_message = $3,\n                completed_at = NOW(),\n                total_files = (SELECT COUNT(*) FROM restore_job_files WHERE job_id = $1)::INTEGER,\n                total_files_succeeded = (SELECT COUNT(*) FROM restore_job_files WHERE job_id = $1 AND status = 'completed')::INTEGER,\n                total_files_failed = (SELECT COUNT(*) FROM restore_job_files WHERE job_id = $1 AND status = 'failed')::INTEGER,\n                original_bytes = (SELECT COALESCE(SUM(original_size), 0) FROM restore_job_files WHERE job_id = $1),\n                restored_bytes = (SELECT COALESCE(SUM(restored_size), 0) FROM restore_job_files WHERE job_id = $1)\n            WHERE id = $1\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "5a609809cf97289ea7c3ceaf3479ec2b774209ae44f0d7ddb64b35ccc2b27f5d"
+}

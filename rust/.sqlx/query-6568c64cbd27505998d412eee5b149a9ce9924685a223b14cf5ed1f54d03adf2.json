@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO chunks (id, hash, size, user_id, storage_id, storage_meta, status_history)\n            VALUES ($1, $2, $3, $4, $5, $6, $7)\n            ON CONFLICT (hash, user_id, storage_id) DO NOTHING\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Bytea",
+        "Int4",
+        "Uuid",
+        "Uuid",
+        "Jsonb",
+        "Jsonb"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "6568c64cbd27505998d412eee5b149a9ce9924685a223b14cf5ed1f54d03adf2"
+}

@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cloudless
+      POSTGRES_USER: cloudless
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cloudless"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    image: ghcr.io/cloudless-backup/cloudless:latest
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://cloudless:${DB_PASSWORD}@postgres:5432/cloudless
+      JWT_SECRET: ${JWT_SECRET}
+      FRONTEND_BASE_URL: ${FRONTEND_BASE_URL}
+      BILLING_MODE: disabled
+      EMAIL_PROVIDER: ${EMAIL_PROVIDER:-log}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      RESEND_FROM_ADDRESS: ${RESEND_FROM_ADDRESS:-noreply@example.com}
+      SES_FROM_ADDRESS: ${SES_FROM_ADDRESS:-noreply@example.com}
+      CORS_ORIGINS: ${CORS_ORIGINS:-}
+      HOST: 0.0.0.0
+      PORT: 9000
+      RUST_LOG: info
+    ports:
+      - "${API_PORT:-9000}:9000"
+
+volumes:
+  postgres_data:

@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE remote_file_versions\n            SET status = $1,\n                status_history = status_history || jsonb_build_array(jsonb_build_array(to_jsonb(now()), $1::jsonb))\n            WHERE id = $2\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Jsonb",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "01e6cb2ce08e760e628a0481e44d3c155da22e3911f3a42cee84de43d80dc744"
+}
