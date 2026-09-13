@@ -39,7 +39,7 @@ This document defines trust boundaries, threats, and mitigations for the CloudLe
 - User/device/config metadata
 
 ### Key hierarchy integrity
-- KEK derived via `Argon2id(password, salt)` — password never leaves client
+- KEK derived via `Argon2id(password, salt)`: password never leaves client
 - DEK is random 256-bit, encrypted under KEK
 - Content key, metadata key, index key derived from DEK via `HKDF-SHA256` with domain separation
 - All sensitive keys wrapped in `Zeroizing<T>` (zeroed on drop)
@@ -51,17 +51,17 @@ This document defines trust boundaries, threats, and mitigations for the CloudLe
 ### 1. Chunk deletion or corruption in storage
 **Threat**: Attacker or storage failure removes/corrupts encrypted chunks.
 **Mitigation**:
-- Pre-restore integrity check (HEAD request per chunk) — aborts before any writes
+- Pre-restore integrity check (HEAD request per chunk): aborts before any writes
 - SHA-256 hash verification of plaintext after decrypt+decompress
-- Fail loudly — never silently skip missing chunks
+- Fail loudly: never silently skip missing chunks
 - GC re-verifies chunk orphan status before database deletion (two-phase)
 
 ### 2. OAuth token compromise
-**Threat**: Stolen OAuth refresh token grants access to user's Google Drive storage.
+**Threat**: Stolen OAuth refresh token grants access to user's Google Drive or OneDrive storage.
 **Mitigation**:
 - Refresh tokens encrypted at rest in PostgreSQL
-- OAuth scope limited to `drive.file` (app can only access files it created)
-- Token revocation support — hard-stops Drive access immediately
+- OAuth scope limited to `drive.file` (Google Drive) or `Files.ReadWrite.AppFolder` (OneDrive) so the app can only access files it created
+- Token revocation support: hard-stops storage access immediately
 - Short-lived access tokens with automatic refresh on 401
 
 ### 3. Replay attacks on API
@@ -77,7 +77,7 @@ This document defines trust boundaries, threats, and mitigations for the CloudLe
 **Mitigation**:
 - Chunks not registered in DB until upload confirmed
 - Backup jobs are resumable from last incomplete file
-- No assumption of chunk existence — verification required
+- No assumption of chunk existence: verification required
 - Stale S3 chunks re-encrypted and re-registered during backup
 
 ### 5. Backend / API server compromise
@@ -85,7 +85,7 @@ This document defines trust boundaries, threats, and mitigations for the CloudLe
 **Mitigation**:
 - No plaintext file data stored server-side (zero-knowledge)
 - File paths stored encrypted with per-encryption random nonces
-- DEK stored encrypted — attacker cannot decrypt without user's password/recovery key
+- DEK stored encrypted: attacker cannot decrypt without user's password/recovery key
 - Limited OAuth scope prevents broad storage access
 - Security events logged for audit trail
 
@@ -94,7 +94,7 @@ This document defines trust boundaries, threats, and mitigations for the CloudLe
 **Mitigation**:
 - DEK held in memory only during active session (zeroized on drop)
 - Biometric unlock backed by OS keychain (Face ID / Touch ID / fingerprint)
-- SQLite local index is a rebuildable cache — no secrets stored
+- SQLite local index is a rebuildable cache: no secrets stored
 - Device isolation: compromising one device doesn't affect others
 
 ### 7. Password compromise
@@ -141,7 +141,7 @@ This document defines trust boundaries, threats, and mitigations for the CloudLe
 **Mitigation**:
 - Every incoming webhook verified with HMAC-SHA256 signature before processing (`verify_webhook_signature` uses constant-time comparison)
 - Stale timestamps rejected (replay window limited)
-- Webhook secret stored server-side only — never exposed to clients
+- Webhook secret stored server-side only: never exposed to clients
 - Subscription state transitions driven by verified webhook events only; no client-controlled upgrade path
 - Server-side reconciliation endpoint (admin only) to re-sync state from payment provider if webhook is missed
 
@@ -150,7 +150,7 @@ This document defines trust boundaries, threats, and mitigations for the CloudLe
 **Mitigation**:
 - Subscription state stored and enforced server-side in PostgreSQL
 - Entitlement checks performed on each protected API call
-- Subscription managed exclusively via payment-provider webhook — no user-facing endpoint grants subscription status directly
+- Subscription managed exclusively via payment-provider webhook: no user-facing endpoint grants subscription status directly
 - Admin reconcile endpoint behind `SuperAdmin` role for manual correction only
 
 ---
@@ -158,13 +158,13 @@ This document defines trust boundaries, threats, and mitigations for the CloudLe
 ## SECURITY INVARIANTS (MUST BE PRESERVED)
 
 1. Server never sees plaintext file data or paths
-2. DEK never stored in plaintext — always encrypted under KEK, biometric key, or recovery key
-3. All sensitive keys `Zeroizing<T>` — zeroed on drop, no accidental leaks
+2. DEK never stored in plaintext: always encrypted under KEK, biometric key, or recovery key
+3. All sensitive keys `Zeroizing<T>`: zeroed on drop, no accidental leaks
 4. Chunk hash computed on plaintext BEFORE encryption (content-addressable dedup)
 5. Per-chunk random nonces for IND-CPA security
-6. Device namespaces are strictly isolated — no cross-device data mixing
+6. Device namespaces are strictly isolated: no cross-device data mixing
 7. Idempotency enforced at database level for all mutating operations
-8. System fails loudly on integrity issues — never silently corrupts or drops data
+8. System fails loudly on integrity issues: never silently corrupts or drops data
 
 ---
 

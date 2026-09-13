@@ -217,7 +217,7 @@ rust/
 │   └── web/routes/     # HTTP route handlers
 ├── core/               # Client-side core library (cloudless_core)
 │   ├── ports/          # Abstract interfaces (traits)
-│   │   ├── api/        # API port traits — one file per domain entity:
+│   │   ├── api/        # API port traits: one file per domain entity:
 │   │   │               # backup_config, backup_job, blog, chunk, dashboard,
 │   │   │               # email_template, encrypted_dek, gc, local_device, policy,
 │   │   │               # remote_file_version, remote_storage, restore_job,
@@ -395,7 +395,7 @@ where
 Use `thiserror` for all error types. Never use `anyhow` in library crates.
 
 ```rust
-// core/src/model/app_error.rs — client-side errors
+// core/src/model/app_error.rs: client-side errors
 #[derive(thiserror::Error, Debug)]
 pub enum AppError {
     #[error("Not found: {message}")]
@@ -408,14 +408,14 @@ pub enum AppError {
     Validation { message: String, source: Option<Box<dyn Error + Send + Sync>> },
     #[error("Internal error: {message}")]
     Internal { message: String, source: Option<Box<dyn Error + Send + Sync>> },
-    /// OAuth refresh token expired/revoked — surface a reauth prompt to the user.
+    /// OAuth refresh token expired/revoked: surface a reauth prompt to the user.
     #[error("Auth token expired for storage {storage_id}")]
     AuthTokenExpired { storage_id: Uuid },
 }
 
 pub type AppResult<T> = Result<T, AppError>;
 
-// core/src/ports/api/mod.rs — API layer errors
+// core/src/ports/api/mod.rs: API layer errors
 #[derive(Debug, thiserror::Error)]
 pub enum ApiClientError {
     #[error("transport error")]
@@ -548,7 +548,7 @@ AI agents MUST read and follow these companion documents before generating code:
 ### Instructions for AI Models
 
 1. **Before writing any code**, consult `architecture.md` to understand where the code belongs in the crate structure and how it fits the ports & adapters pattern.
-2. **Before adding new functionality**, follow the step-by-step process in `contributing.md` — define types in `api_types`, add port traits, implement adapters, wire through Env.
+2. **Before adding new functionality**, follow the step-by-step process in `contributing.md`: define types in `api_types`, add port traits, implement adapters, wire through Env.
 3. **Before modifying security-related code**, review `threat-model.md` to ensure no security invariant is weakened. If unsure, ask.
-4. **All three documents are authoritative** — if your suggestion conflicts with any of them, the suggestion is WRONG.
-5. **Layer boundaries are non-negotiable** — `applications/` must never import `adapters/` directly. All dependencies flow through port traits and Env accessors.
+4. **All three documents are authoritative**: if your suggestion conflicts with any of them, the suggestion is WRONG.
+5. **Layer boundaries are non-negotiable**: `applications/` must never import `adapters/` directly. All dependencies flow through port traits and Env accessors.

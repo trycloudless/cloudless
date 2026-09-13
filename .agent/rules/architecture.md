@@ -14,7 +14,7 @@ It explains *why* decisions exist so they are not accidentally reversed.
 ## 1. SYSTEM OVERVIEW
 
 CloudLess is an encrypted backup engine. It provides:
-- Client-side encryption (zero-knowledge — server never sees plaintext)
+- Client-side encryption (zero-knowledge: server never sees plaintext)
 - Chunk-based deduplication (content-addressable by SHA-256)
 - Per-device file versioning with soft-delete bin
 - Multi-device support (desktop, iOS, Android)
@@ -85,7 +85,7 @@ It is explicitly **not** a synchronization system.
     │    └─────────────────────────────────────────────────────┘   │
     └──────────────────────────────────────────────────────────────┘
 
-    DATA PLANE (client uploads directly — never through API server)
+    DATA PLANE (client uploads directly: never through API server)
     ┌──────────────────────────────────────────────────────────────┐
     │                                                              │
     │   ┌──────────────────┐        ┌──────────────────────────┐  │
@@ -101,8 +101,8 @@ It is explicitly **not** a synchronization system.
 
 ### Key Principles
 - **Control Plane** (PostgreSQL): Single source of truth for all metadata
-- **Data Plane** (S3/Google Drive): Dumb, untrusted blob storage — encrypted chunks only
-- **Clients**: All encryption/decryption happens here — server never sees plaintext
+- **Data Plane** (S3/Google Drive): Dumb, untrusted blob storage: encrypted chunks only
+- **Clients**: All encryption/decryption happens here: server never sees plaintext
 - **Direct upload**: Chunks flow directly from client to storage, never through the API server
 
 ---
@@ -160,7 +160,7 @@ rust/
 ## 4. DEVICE MODEL
 
 - Each device is an independent namespace
-- File identity: `(backup_config_id, blind_index)` — path encrypted, blind index for equality search
+- File identity: `(backup_config_id, blind_index)`: path encrypted, blind index for equality search
 - Same path on different devices = different files
 - Deduplication happens only by content hash (cross-device, cross-config)
 - Desktop: device matched by machine UID
@@ -218,7 +218,7 @@ There are no snapshots or DAGs.
 ### File Path Encryption
 - Encrypted with `metadata_key` (AES-256-GCM, random nonce per encryption)
 - Blind index computed via `HMAC-SHA256(path, index_key)` for server-side equality search
-- Server stores: `encrypted_name`, `nonce`, `blind_index` — never sees plaintext path
+- Server stores: `encrypted_name`, `nonce`, `blind_index`: never sees plaintext path
 
 ### All sensitive keys zeroized on drop (`Zeroizing<T>`)
 
@@ -343,8 +343,18 @@ There are no snapshots or DAGs.
 - AWS SDK v2 with custom TLS (webpki-roots for Android compatibility)
 - Avoids EC2 IMDS probing (hangs on mobile)
 
+### Microsoft OneDrive
+- User-owned storage
+- OAuth2 via Microsoft Graph API v1.0, `Files.ReadWrite.AppFolder` scope only (app can only access its own app folder)
+- Automatic token refresh, mirrors the Google Drive adapter's consent model
+
+### SFTP
+- User-owned storage (user provides host, port, and credentials: password or private key)
+- Host key fingerprint verified on connection; no OAuth flow, trust is established directly with the user's server
+- Suited for self-hosted or on-premises targets outside the OAuth-based providers
+
 ### Common Properties
-- Storage never owns metadata — PostgreSQL is truth
+- Storage never owns metadata: PostgreSQL is truth
 - Client uploads directly to storage (never through API server)
 - Storage adapter implements `StoragePort` trait: `put`, `get`, `delete`, `list`, `exists`
 
@@ -354,7 +364,7 @@ There are no snapshots or DAGs.
 
 ### Three-Phase Design (client-driven)
 
-**Phase A — Server Collect** (`POST /api/gc/collect`):
+**Phase A: Server Collect** (`POST /api/gc/collect`):
 1. Find `MovedToBin` versions past retention period (`bin_retention_days`, default 30)
 2. Mark expired versions as `Deleted`
 3. Remove chunk-version junction entries
@@ -362,13 +372,13 @@ There are no snapshots or DAGs.
 5. Record audit trail in `gc_run_versions` and `gc_run_chunks`
 6. Return orphaned chunk list to client
 
-**Phase B — Client Delete** (client-side):
+**Phase B: Client Delete** (client-side):
 1. Group orphaned chunks by storage_id
 2. Build storage adapter per storage (S3 or Google Drive)
 3. Delete chunks from storage
 4. Handle partial failures gracefully
 
-**Phase C — Server Confirm** (`POST /api/gc/confirm_chunk_deletions`):
+**Phase C: Server Confirm** (`POST /api/gc/confirm_chunk_deletions`):
 1. Re-verify chunks still orphaned (race condition protection)
 2. Delete chunk rows from database
 3. Mark gc_run as completed with stats
@@ -393,7 +403,7 @@ There are no snapshots or DAGs.
 
 - Axum server, REST + JSON, ~70 endpoints
 - JWT authentication (access + refresh token pair)
-- Stateless — client drives all workflows
+- Stateless: client drives all workflows
 - Device-scoped operations
 - Designed for mobile reliability (resumable jobs, retry-safe)
 - Chunk data never flows through API server
@@ -520,7 +530,7 @@ Conflicts occur only when:
 
 Resolution: reject with HTTP `409`, preserve existing data, allow client retry.
 
-Enforced server-side via a per-`(backup_config_id, name_blind_index)` advisory transaction lock plus a `base_version` compare-and-insert: the server serializes concurrent writers for the same file identity, checks the client's `base_version` against the current max version, and only assigns the next version if they match. File-version creation and chunk registration additionally carry a deterministic idempotency key (derived from the request's own identity, not randomly generated), so a retried request either replays the original stored response or gets a `409` if the payload diverged — never a silent duplicate or a second side effect.
+Enforced server-side via a per-`(backup_config_id, name_blind_index)` advisory transaction lock plus a `base_version` compare-and-insert: the server serializes concurrent writers for the same file identity, checks the client's `base_version` against the current max version, and only assigns the next version if they match. File-version creation and chunk registration additionally carry a deterministic idempotency key (derived from the request's own identity, not randomly generated), so a retried request either replays the original stored response or gets a `409` if the payload diverged: never a silent duplicate or a second side effect.
 
 Cross-device conflicts do not exist by design.
 
@@ -536,7 +546,7 @@ Cross-device conflicts do not exist by design.
 | Storage chunk missing | Pre-restore integrity check aborts before any writes |
 | Stale S3 chunks | Re-encrypted and re-registered during backup |
 | Password forgotten | Recovery key unlocks DEK |
-| Device lost | New device, same account — all metadata in PostgreSQL |
+| Device lost | New device, same account: all metadata in PostgreSQL |
 
 Detection happens on restore and GC. Recovery is explicit and user-visible.
 

@@ -1,6 +1,6 @@
 # Security Policy
 
-CloudLess is a client-side encrypted backup engine: files are hashed, compressed, and encrypted on-device before upload, and the server is designed to never see plaintext data or paths. The full threat model, trust boundaries, and security invariants are documented in [`.agent/rules/threat-model.md`](.agent/rules/threat-model.md) — please read it before reporting, so you can reference the specific invariant your finding affects.
+CloudLess is a client-side encrypted backup engine: files are hashed, compressed, and encrypted on-device before upload, and the server is designed to never see plaintext data or paths. The full threat model, trust boundaries, and security invariants are documented in [`docs/threat-model.md`](docs/threat-model.md); please read it before reporting, so you can reference the specific invariant your finding affects.
 
 ## Reporting a Vulnerability
 
@@ -12,15 +12,15 @@ Report privately by emailing **security@trycloudless.io** with:
 - Steps to reproduce, including affected version/commit
 - Any proof-of-concept code or logs (redact any real user data)
 
-If your finding involves cryptography (key derivation, encryption ordering, nonce reuse, etc.), please point to the specific invariant in `.agent/rules/threat-model.md` that you believe is violated — it speeds up triage significantly.
+If your finding involves cryptography (key derivation, encryption ordering, nonce reuse, etc.), please point to the specific invariant in `docs/threat-model.md` that you believe is violated; it speeds up triage significantly.
 
 ### What to expect
 
-*(These are our current targets while the project is early-stage — if we miss them, please follow up.)*
+*(These are our current targets while the project is early-stage: if we miss them, please follow up.)*
 
 - Acknowledgement of your report within **3 business days**
 - An initial assessment (severity, whether it's accepted) within **7 business days**
-- A fix timeline communicated once severity is confirmed — critical issues (e.g. plaintext exposure, authentication bypass, cross-device data leakage) are prioritized immediately
+- A fix timeline communicated once severity is confirmed: critical issues (e.g. plaintext exposure, authentication bypass, cross-device data leakage) are prioritized immediately
 
 We'll credit reporters in the fix notes/changelog unless you'd prefer to stay anonymous.
 
@@ -33,10 +33,10 @@ We'll credit reporters in the fix notes/changelog unless you'd prefer to stay an
 - The self-hosted Docker Compose deployment configuration in `deploy/self-hosted/`
 
 **Out of scope:**
-- Vulnerabilities in third-party dependencies — please report those upstream (we'll still appreciate a heads-up)
-- The security of a self-hoster's own infrastructure, TLS termination, reverse proxy, or OS-level hardening — CloudLess ships the app; operators are responsible for their deployment environment
+- Vulnerabilities in third-party dependencies: please report those upstream (we'll still appreciate a heads-up)
+- The security of a self-hoster's own infrastructure, TLS termination, reverse proxy, or OS-level hardening: CloudLess ships the app; operators are responsible for their deployment environment
 - Social engineering, physical attacks, or denial-of-service against trycloudless.io's hosted infrastructure
-- Issues that require an already-compromised device or an already-known plaintext password (see [Non-Goals](.agent/rules/threat-model.md#non-goals) in the threat model)
+- Issues that require an already-compromised device or an already-known plaintext password (see [Non-Goals](docs/threat-model.md#non-goals) in the threat model)
 
 ## Safe Harbor
 

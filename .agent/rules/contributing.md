@@ -14,13 +14,13 @@ This project strictly follows the **Ports & Adapters (Hexagonal) architecture** 
 
 ### Core Rules
 
-1. **Business logic lives in `applications/`** — it depends only on port traits, never on concrete adapters or frameworks.
-2. **Ports are traits** defined in `ports/` — they describe what the application needs (e.g. `StoragePort`, `BackupConfigApiPort`). Ports never import adapter code.
-3. **Adapters implement ports** in `adapters/` — they bridge external systems (HTTP APIs, S3, filesystem, encryption) to the port interfaces.
-4. **Dependency injection via Env traits** — each application domain defines an `Env` trait (e.g. `BackupEnv`) that groups the port types it needs. The concrete `AppEnv` (in `core/src/app_env.rs`) wires all adapters. Functions accept `E: SomeEnv` as a generic parameter.
-5. **Never bypass the Env pattern** — do not construct adapters directly inside business logic. Always access dependencies through `env.some_api()` or `env.some_repo()`.
-6. **Server-side follows the same pattern** — the `api_server` crate has its own `core/ports/` traits (repo traits), `infra/psql/` adapters (Postgres implementations), and `core/*/env.rs` Env traits. Route handlers delegate to `core/*/application.rs` functions.
-7. **Dependency flow** — `applications/` → imports `ports/` traits only. `adapters/` → imports `ports/` traits and implements them. `app_env.rs` → imports both `ports/` and `adapters/` to wire them together. No other module should import `adapters/` directly.
+1. **Business logic lives in `applications/`**: it depends only on port traits, never on concrete adapters or frameworks.
+2. **Ports are traits** defined in `ports/`: they describe what the application needs (e.g. `StoragePort`, `BackupConfigApiPort`). Ports never import adapter code.
+3. **Adapters implement ports** in `adapters/`: they bridge external systems (HTTP APIs, S3, filesystem, encryption) to the port interfaces.
+4. **Dependency injection via Env traits**: each application domain defines an `Env` trait (e.g. `BackupEnv`) that groups the port types it needs. The concrete `AppEnv` (in `core/src/app_env.rs`) wires all adapters. Functions accept `E: SomeEnv` as a generic parameter.
+5. **Never bypass the Env pattern**: do not construct adapters directly inside business logic. Always access dependencies through `env.some_api()` or `env.some_repo()`.
+6. **Server-side follows the same pattern**: the `api_server` crate has its own `core/ports/` traits (repo traits), `infra/psql/` adapters (Postgres implementations), and `core/*/env.rs` Env traits. Route handlers delegate to `core/*/application.rs` functions.
+7. **Dependency flow**: `applications/` → imports `ports/` traits only. `adapters/` → imports `ports/` traits and implements them. `app_env.rs` → imports both `ports/` and `adapters/` to wire them together. No other module should import `adapters/` directly.
 
 ### Adding New Functionality (Client-Side)
 
@@ -84,34 +84,34 @@ When adding a new capability on the server (`api_server/` crate):
 
 ## Functional Design Patterns
 
-1. **Pure functions over stateful methods** — prefer free functions that take `&env` over methods on structs carrying state. Application functions are standalone `async fn` that receive `env` as a parameter.
-2. **Compose small functions** — break complex operations into focused, single-responsibility helper functions (e.g. `create_file_version`, `upload_or_deduplicate_chunk`, `register_chunk`). Each function should do one thing clearly.
-3. **Data flows through function parameters and return values** — avoid hidden side effects. Make inputs and outputs explicit in function signatures.
-4. **Use `Result<T, E>` for all fallible operations** — propagate errors with `?`. Never panic in application logic.
-5. **Callbacks and closures for extensibility** — shared components (e.g. `LoginFormView`) use callbacks (`Callback<T>`) or optional props to adapt behavior without inheritance.
+1. **Pure functions over stateful methods**: prefer free functions that take `&env` over methods on structs carrying state. Application functions are standalone `async fn` that receive `env` as a parameter.
+2. **Compose small functions**: break complex operations into focused, single-responsibility helper functions (e.g. `create_file_version`, `upload_or_deduplicate_chunk`, `register_chunk`). Each function should do one thing clearly.
+3. **Data flows through function parameters and return values**: avoid hidden side effects. Make inputs and outputs explicit in function signatures.
+4. **Use `Result<T, E>` for all fallible operations**: propagate errors with `?`. Never panic in application logic.
+5. **Callbacks and closures for extensibility**: shared components (e.g. `LoginFormView`) use callbacks (`Callback<T>`) or optional props to adapt behavior without inheritance.
 
 ---
 
 ## Rust Idiomatic Patterns
 
-1. **Trait-based polymorphism** — use traits and generics for abstraction, not dynamic dispatch (unless trait objects are required, e.g. `Box<dyn StoragePort>`).
-2. **Ownership and borrowing** — pass `&self` and `&T` by default. Only clone when necessary. Use `Arc` for shared ownership across async tasks.
-3. **Type-driven design** — encode invariants in the type system. Use newtype wrappers (e.g. `ObjectKey`, `Dek`) rather than raw primitives.
-4. **Error types** — use `thiserror` for defining error enums. Domain errors (`AppError`) are separate from API errors (`ApiClientError`) and server errors (`CoreError`).
-5. **`async_trait`** — use `#[async_trait]` for async trait methods until native async traits are stable.
-6. **Derive when possible** — use `#[derive(Debug, Clone, Serialize, Deserialize)]` on data types. Implement traits manually only when custom behavior is needed.
-7. **Module organization** — one concern per file. Use `mod.rs` only for re-exports. Keep files focused and under 300 lines where practical.
+1. **Trait-based polymorphism**: use traits and generics for abstraction, not dynamic dispatch (unless trait objects are required, e.g. `Box<dyn StoragePort>`).
+2. **Ownership and borrowing**: pass `&self` and `&T` by default. Only clone when necessary. Use `Arc` for shared ownership across async tasks.
+3. **Type-driven design**: encode invariants in the type system. Use newtype wrappers (e.g. `ObjectKey`, `Dek`) rather than raw primitives.
+4. **Error types**: use `thiserror` for defining error enums. Domain errors (`AppError`) are separate from API errors (`ApiClientError`) and server errors (`CoreError`).
+5. **`async_trait`**: use `#[async_trait]` for async trait methods until native async traits are stable.
+6. **Derive when possible**: use `#[derive(Debug, Clone, Serialize, Deserialize)]` on data types. Implement traits manually only when custom behavior is needed.
+7. **Module organization**: one concern per file. Use `mod.rs` only for re-exports. Keep files focused and under 300 lines where practical.
 
 ---
 
 ## DRY Principle (Strict)
 
-1. **Shared presentational components** go in `shared_ui` — any UI component used by both `leptos_ui` (CSR/Tauri) and `website` (SSR) must be extracted to `shared_ui`. No duplication across the two.
-2. **Shared types** go in `api_types` — request/response structs, enums, and DTOs are defined once and shared across all crates.
-3. **Shared style constants** go in `shared_ui::styles` — Tailwind class strings used across components are constants, not inline strings.
-4. **Utility functions** are shared — functions like `format_bytes`, `format_date` live in `shared_ui::utils` or `cloudless_core` as appropriate.
-5. **Test helpers** — when three or more test modules need the same stub implementation, extract it to a shared test utilities module. Do not copy-paste stubs across files.
-6. **If you see duplication, fix it** — when touching code that duplicates logic found elsewhere, extract the common part before proceeding.
+1. **Shared presentational components** go in `shared_ui`: any UI component used by both `leptos_ui` (CSR/Tauri) and `website` (SSR) must be extracted to `shared_ui`. No duplication across the two.
+2. **Shared types** go in `api_types`: request/response structs, enums, and DTOs are defined once and shared across all crates.
+3. **Shared style constants** go in `shared_ui::styles`: Tailwind class strings used across components are constants, not inline strings.
+4. **Utility functions** are shared: functions like `format_bytes`, `format_date` live in `shared_ui::utils` or `cloudless_core` as appropriate.
+5. **Test helpers**: when three or more test modules need the same stub implementation, extract it to a shared test utilities module. Do not copy-paste stubs across files.
+6. **If you see duplication, fix it**: when touching code that duplicates logic found elsewhere, extract the common part before proceeding.
 
 ---
 
@@ -130,7 +130,7 @@ When adding a new capability on the server (`api_server/` crate):
 - Rust stable edition
 - `sqlx` only for DB access
 - No `unwrap()` in production code (allowed in tests)
-- Typed errors everywhere — no `String` errors, no `anyhow` in library code
+- Typed errors everywhere: no `String` errors, no `anyhow` in library code
 - Explicit transactions for multi-statement DB operations
 - Document public functions with `///` doc comments explaining what and why
 
@@ -149,6 +149,6 @@ When adding a new capability on the server (`api_server/` crate):
 
 AI-generated code must:
 - Follow `agents.md` and this contributing guide
-- Respect ports & adapters architecture — no shortcuts
+- Respect ports & adapters architecture: no shortcuts
 - Be reviewed for correctness
 - Never be merged blindly

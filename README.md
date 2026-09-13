@@ -2,18 +2,20 @@
 
 **Client-side encrypted backup with chunk deduplication, multi-storage support, and self-hosting.**
 
-CloudLess is a backup engine — not a sync tool. Files are chunked, hashed, compressed, and encrypted entirely on your device before leaving it. The server never sees plaintext data.
+CloudLess is a backup engine, not a sync tool. Files are chunked, hashed, compressed, and encrypted entirely on your device before leaving it. The server never sees plaintext data.
+
+![CloudLess dashboard showing security status, encryption details, and quick backup actions](docs/assets/dashboard-screenshot.png)
 
 ---
 
 ## Features
 
-- **Zero-knowledge encryption** — AES-256-GCM with per-file data encryption keys (DEKs) wrapped by a user key-encryption key (KEK). The server stores only ciphertext.
-- **Content-addressed deduplication** — chunks deduplicated by SHA-256 of plaintext; duplicate content uploaded once per user.
-- **Multiple storage backends** — AWS S3, Google Drive (via user OAuth), SFTP, and local filesystem for dev/test.
-- **Per-device file versioning** — linear integer versions per `(backup_config_id, path)`. Each device is an independent namespace; files are never merged across devices.
-- **Self-hosted mode** — run your own server with Docker Compose. Billing is disabled; all users get full backup features.
-- **Desktop app** — Tauri + Leptos (WASM) desktop client for macOS, Linux, and Windows.
+- **Zero-knowledge encryption**: AES-256-GCM with per-file data encryption keys (DEKs) wrapped by a user key-encryption key (KEK). The server stores only ciphertext.
+- **Content-addressed deduplication**: chunks deduplicated by SHA-256 of plaintext; duplicate content uploaded once per user.
+- **Multiple storage backends**: AWS S3, Google Drive, Microsoft OneDrive (all via user OAuth), SFTP, and local filesystem for dev/test.
+- **Per-device file versioning**: linear integer versions per `(backup_config_id, path)`. Each device is an independent namespace; files are never merged across devices.
+- **Self-hosted mode**: run your own server with Docker Compose. Billing is disabled; all users get full backup features.
+- **Desktop and mobile clients**: Tauri + Leptos (WASM) client for macOS, Linux, and Windows, with Android and iOS support in progress.
 
 ---
 
@@ -36,9 +38,9 @@ Crate layout:
   cli/                CLI utility
 ```
 
-See [`docs/engineering/`](docs/engineering/) for detailed architecture documentation:
-- [`architecture`](.agent/rules/architecture.md) — encryption model, backup/restore pipelines, storage backends, Env DI pattern
-- [`known_issues.md`](docs/engineering/known_issues.md) — current known bugs and limitations
+See [`docs/`](docs/) for detailed architecture documentation:
+- [`docs/architecture.md`](docs/architecture.md): encryption model, backup/restore pipelines, storage backends, Env DI pattern
+- [`docs/engineering/known_issues.md`](docs/engineering/known_issues.md): current known bugs and limitations
 
 ---
 
@@ -141,7 +143,7 @@ cargo sqlx prepare --workspace
 
 ## Self-Hosting
 
-CloudLess ships a Docker Compose configuration for self-hosted deployments. Billing is always disabled in self-hosted mode — all users receive Pro-equivalent limits.
+CloudLess ships a Docker Compose configuration for self-hosted deployments. Billing is always disabled in self-hosted mode: all users receive Pro-equivalent limits.
 
 ### Prerequisites
 
@@ -171,7 +173,7 @@ FRONTEND_BASE_URL=https://backup.yourdomain.com
 
 BILLING_MODE=disabled
 
-# "log" prints emails to stdout — no external service needed.
+# "log" prints emails to stdout: no external service needed.
 # Set to "resend" and add RESEND_API_KEY to send real emails.
 EMAIL_PROVIDER=log
 ```
@@ -188,10 +190,10 @@ The API server is available at `http://localhost:9000` by default. Point your re
 
 CloudLess stores backup chunks in object storage. Configure one of:
 
-- **AWS S3** — add `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, `S3_BUCKET` to `.env`
-- **Google Drive** — users authenticate via OAuth from the desktop app (see below)
-- **OneDrive** — users authenticate via OAuth from the desktop app (see below)
-- **SFTP** — specify connection details in the desktop app
+- **AWS S3**: add `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, `S3_BUCKET` to `.env`
+- **Google Drive**: users authenticate via OAuth from the desktop app (see below)
+- **OneDrive**: users authenticate via OAuth from the desktop app (see below)
+- **SFTP**: specify connection details in the desktop app
 
 ### Environment variable reference
 
@@ -218,14 +220,14 @@ docker build -f rust/api_server/Dockerfile -t cloudless-api:local .
 
 ### Tauri desktop app
 
-The desktop app requires OAuth credentials for Google Drive and OneDrive. You must register your own OAuth apps — you cannot use the official CloudLess app credentials (see [Google's ToS](https://developers.google.com/terms) and [Microsoft's ToS](https://learn.microsoft.com/en-us/legal/microsoft-apis/terms-of-use)).
+The desktop app requires OAuth credentials for Google Drive and OneDrive. You must register your own OAuth apps: you cannot use the official CloudLess app credentials (see [Google's ToS](https://developers.google.com/terms) and [Microsoft's ToS](https://learn.microsoft.com/en-us/legal/microsoft-apis/terms-of-use)).
 
 #### Google Drive
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials.
 2. Create an OAuth 2.0 Client ID, application type **Desktop app**.
 3. Enable the **Google Drive API** for the project.
-4. Copy the Client ID (no client secret needed — desktop apps use PKCE).
+4. Copy the Client ID (no client secret needed: desktop apps use PKCE).
 
 #### Microsoft OneDrive
 
@@ -261,15 +263,15 @@ The desktop app embeds the Leptos WASM frontend. `trunk` is invoked automaticall
 
 ## Contributing
 
-We follow the **Ports & Adapters** pattern strictly. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the full guide: dev workflow, layer boundaries, coding conventions, testing requirements, and PR process.
+We follow the **Ports & Adapters** pattern strictly. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the full guide: dev workflow, layer boundaries, coding conventions, testing requirements, and PR process. For the deep-dive architectural reference, see [`docs/contributing.md`](docs/contributing.md).
 
 ---
 
 ## Security
 
-CloudLess is designed so the server never sees plaintext data. The threat model and security invariants are documented in [`.agent/rules/threat-model.md`](.agent/rules/threat-model.md).
+CloudLess is designed so the server never sees plaintext data. The threat model and security invariants are documented in [`docs/threat-model.md`](docs/threat-model.md).
 
-To report a vulnerability, see [`SECURITY.md`](SECURITY.md) — please do not open a public issue.
+To report a vulnerability, see [`SECURITY.md`](SECURITY.md); please do not open a public issue.
 
 ---
 
@@ -277,10 +279,10 @@ To report a vulnerability, see [`SECURITY.md`](SECURITY.md) — please do not op
 
 | Document | Contents |
 |----------|----------|
+| [`docs/architecture.md`](docs/architecture.md) | Full system architecture reference |
+| [`docs/contributing.md`](docs/contributing.md) | Deep-dive contribution guide and patterns |
+| [`docs/threat-model.md`](docs/threat-model.md) | Security threat model |
 | [`docs/engineering/known_issues.md`](docs/engineering/known_issues.md) | Current known bugs |
-| [`.agent/rules/architecture.md`](.agent/rules/architecture.md) | Full system architecture reference |
-| [`.agent/rules/contributing.md`](.agent/rules/contributing.md) | Contribution guide and patterns |
-| [`.agent/rules/threat-model.md`](.agent/rules/threat-model.md) | Security threat model |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | How to contribute: setup, PR process, coding conventions |
 | [`SECURITY.md`](SECURITY.md) | How to report a vulnerability |
 | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) | Community standards |
