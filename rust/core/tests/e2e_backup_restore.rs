@@ -1501,9 +1501,9 @@ async fn e2e_full_backup_and_restore_flow() {
 
     // ── Phase 13: GC Pipeline ─────────────────────────────────────
     // Validates the GC API surface end-to-end:
-    //   1. Set retention to minimum (1 day) — 0 is rejected by validation
+    //   1. Set retention to minimum (7 days) — below 7 or above 30 is rejected by validation
     //   2. Move the only version of docs/report.pdf to bin (soft-delete)
-    //   3. Run GC: with 1-day retention the bin version won't expire in a
+    //   3. Run GC: with 7-day retention the bin version won't expire in a
     //      single test run, so versions_deleted=0. The GC still executes the
     //      full collect→delete→confirm pipeline and returns a valid summary.
     //   4. Assert GC ran without error (pipeline is functional)
@@ -1512,12 +1512,12 @@ async fn e2e_full_backup_and_restore_flow() {
     gc_app::update_retention_settings(
         &env,
         UpdateRetentionSettingsRequest {
-            bin_retention_days: 1,
+            bin_retention_days: 7,
         },
     )
     .await
     .expect("update_retention_settings failed");
-    println!("  Set bin retention to 1 day (minimum valid value)");
+    println!("  Set bin retention to 7 days (minimum valid value)");
 
     // Fetch the current file list to locate docs/report.pdf
     let browse_for_gc = list_backed_up_files(&env, config_id, None, 50, &derived_keys)

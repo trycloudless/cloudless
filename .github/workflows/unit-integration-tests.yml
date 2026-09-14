@@ -74,6 +74,7 @@ jobs:
       PORT: "9099"
       HOST: "0.0.0.0"
       API_BASE_URL: "http://localhost:9099"
+      BILLING_MODE: "enforce"
       TEST_S3_ACCESS_KEY: ${{ secrets.TEST_S3_ACCESS_KEY }}
       TEST_S3_SECRET: ${{ secrets.TEST_S3_SECRET }}
       TEST_S3_REGION: ${{ vars.TEST_S3_REGION }}
