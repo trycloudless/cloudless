@@ -65,7 +65,8 @@ pub struct AppServerConfig {
     /// Billing mode:
     /// - `"disabled"` (default) — no tier limits; all users get Pro-equivalent limits (self-hosted).
     /// - `"enforce"`  — tier limits enforced using DB subscription rows; no real payment provider.
-    /// - `"external"` — used by the private hosted binary to enable Dodo billing.
+    /// - `"external"` — used by the private hosted binary, which wires a real payment
+    ///   provider (Dodo, behind the `billing-dodo` feature).
     #[serde(default = "default_billing_mode")]
     pub billing_mode: String,
 }

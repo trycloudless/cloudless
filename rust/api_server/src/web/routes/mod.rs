@@ -48,7 +48,7 @@ pub struct AuthContext {
 #[derive(Clone, Debug)]
 pub struct RouterOptions {
     /// When true, mounts `POST /webhooks/dodo`.
-    /// Must be false in self-hosted mode: the Dodo route is meaningless without
+    /// Must be false in self-hosted mode: the webhook route is meaningless without
     /// provider credentials and should not appear in the public route table.
     pub enable_billing_webhooks: bool,
     /// When true, mounts `POST /api/subscription/checkout` and
@@ -117,7 +117,7 @@ pub fn create_router(env: AppEnv, opts: RouterOptions) -> Router {
         .nest("/api/policy", policy_route::public_router())
         .nest("/api", api_routes);
 
-    // Webhook route is absent in self-hosted mode: no Dodo credentials,
+    // Webhook route is absent in self-hosted mode: no provider credentials,
     // no reason to expose the endpoint.
     if opts.enable_billing_webhooks {
         root = root.nest("/webhooks", webhook_route::create_router());

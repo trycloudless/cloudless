@@ -428,7 +428,7 @@ There are no snapshots or DAGs.
 | `/api/blog/*` | 3 | Blog CRUD (admin) |
 | `/api/email_template/*` | 5 | Email template CRUD |
 | `/blog/*` | 2 | Public blog (no auth) |
-| `/webhook/dodo` | 1 | Dodo Payments webhook (HMAC signature-verified, unauthenticated) |
+| `/webhooks/dodo` | 1 | Payment webhook (HMAC signature-verified, unauthenticated). Hosted only: mounted when `RouterOptions::enable_billing_webhooks` is set; the Dodo adapter is compiled only with the `api_server` `billing-dodo` feature |
 
 ---
 

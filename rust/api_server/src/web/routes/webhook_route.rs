@@ -14,18 +14,21 @@ use crate::{
 };
 
 /// Public routes — no JWT auth middleware.
+///
+/// The path stays `/dodo` because it is the URL registered in the Dodo
+/// dashboard for the hosted service; the handler itself is provider-agnostic.
 pub fn create_router() -> Router<AppEnv> {
-    Router::new().route("/dodo", post(dodo_webhook_handler))
+    Router::new().route("/dodo", post(billing_webhook_handler))
 }
 
-/// Receive a Dodo webhook event.
+/// Receive a payment-provider webhook event.
 ///
 /// Uses raw `Bytes` to preserve the exact body for HMAC verification.
 /// Converts headers to a plain `HashMap<String, String>` before passing to
-/// the application layer — the verifier in `DodoClient` extracts only the
-/// Standard Webhooks headers it needs.
+/// the application layer — the active `PaymentWebhookVerifier` extracts only
+/// the headers it needs.
 /// Responds 200 quickly; heavy processing runs in a background task.
-async fn dodo_webhook_handler(
+async fn billing_webhook_handler(
     State(env): State<AppEnv>,
     headers: HeaderMap,
     body: Bytes,
