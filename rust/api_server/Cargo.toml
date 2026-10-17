@@ -11,6 +11,12 @@ path = "src/lib.rs"
 name = "api_server"
 path = "src/main.rs"
 
+[features]
+default = []
+# Dodo Payments adapter used by the hosted service. Off by default so the
+# self-hosted build does not compile any payment-provider code.
+billing-dodo = []
+
 [dependencies]
 cloudless_core = { path = "../core" }
 api_types = { path = "../api_types" }

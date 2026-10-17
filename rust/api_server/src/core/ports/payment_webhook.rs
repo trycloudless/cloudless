@@ -10,8 +10,8 @@ use crate::core::CoreResult;
 
 /// Normalised subscription webhook data.
 ///
-/// Dodo field names are mapped to standard names on ingestion inside
-/// `DodoClient::verify_and_parse`:
+/// Provider field names are mapped to standard names on ingestion by the
+/// active verifier. For example, the Dodo adapter maps:
 ///   previous_billing_date       → period_start
 ///   next_billing_date           → period_end
 ///   cancel_at_next_billing_date → cancel_at_period_end
@@ -28,8 +28,9 @@ pub struct WebhookSubscriptionData {
 
 /// Normalised payment webhook data.
 ///
-/// The verifier resolves Dodo's dual product_id / product_cart shape into a
-/// single `product_id` field (top-level wins; falls back to cart[0]).
+/// The verifier resolves provider-specific shapes (e.g. Dodo's dual
+/// product_id / product_cart) into a single `product_id` field (top-level
+/// wins; falls back to cart[0]).
 pub struct WebhookPaymentData {
     pub provider_payment_id: String,
     pub provider_customer_id: String,
