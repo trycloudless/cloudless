@@ -2,7 +2,7 @@
 ///
 /// Runs the API server with billing disabled — all users receive Pro-equivalent
 /// limits at no cost. The private `cloudless_hosting_app` binary mirrors this
-/// file but wires `BillingAdapter::Dodo` for hosted Dodo billing.
+/// file but wires `BillingAdapter::Dodo` (built with the `billing-dodo` feature).
 use api_server::{
     MIGRATOR,
     app_env::{AppEnv, BillingProductIds},

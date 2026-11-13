@@ -76,7 +76,7 @@ async fn get_history_handler(
     Ok(Json(resp))
 }
 
-/// Create a Dodo hosted checkout session for the requested tier.
+/// Create a hosted checkout session for the requested tier with the active payment provider.
 ///
 /// The client opens the returned `checkout_url` in the system browser.
 /// Entitlement changes happen only after webhook delivery.
@@ -92,7 +92,7 @@ async fn checkout_handler(
     Ok(Json(resp))
 }
 
-/// Create a Dodo customer portal session.
+/// Create a customer portal session with the active payment provider.
 ///
 /// The client opens the returned `portal_url` in the system browser.
 async fn portal_handler(

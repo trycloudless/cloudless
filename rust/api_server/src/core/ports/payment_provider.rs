@@ -17,7 +17,7 @@ pub struct CreateCheckoutParams {
     pub product_id: String,
     pub customer_email: String,
     pub customer_name: String,
-    /// If the user already has a Dodo customer ID, pass it to link the session.
+    /// If the user already has a provider customer ID, pass it to link the session.
     pub provider_customer_id: Option<String>,
     pub return_url: String,
     pub cancel_url: String,

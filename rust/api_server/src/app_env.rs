@@ -84,7 +84,8 @@ pub struct AppEnv {
     /// True when a real email provider (ses/resend) is active; false in "log" dev mode.
     /// Controls whether signup triggers email verification or auto-verifies the user.
     pub email_sending_enabled: bool,
-    /// Active billing adapter — `BillingAdapter::Dodo` for hosted, `Disabled` for self-hosted.
+    /// Active billing adapter — `BillingAdapter::Dodo` for hosted (requires the
+    /// `billing-dodo` feature), `Disabled` for self-hosted.
     pub billing: BillingAdapter,
     /// When true, subscription tier limits are enforced even if `billing` is `Disabled`.
     ///
@@ -356,8 +357,8 @@ impl PaymentEnv for AppEnv {
     }
 
     fn billing_enabled(&self) -> bool {
-        // Dodo active = full hosted billing; enforce flag = tier limits with disabled provider.
-        matches!(self.billing, BillingAdapter::Dodo(_)) || self.billing_enforcement_enabled
+        // A real provider = full hosted billing; enforce flag = tier limits with disabled provider.
+        !matches!(self.billing, BillingAdapter::Disabled(_)) || self.billing_enforcement_enabled
     }
 
     fn product_id_for_tier(&self, tier: SubscriptionTier) -> Option<String> {

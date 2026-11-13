@@ -26,9 +26,13 @@ jobs:
         with:
           workspaces: rust
 
-      - name: Check api_server
+      - name: Check api_server (self-hosted, no payment provider)
         working-directory: rust
         run: cargo check -p api_server
+
+      - name: Check api_server (hosted, billing-dodo)
+        working-directory: rust
+        run: cargo check -p api_server --features billing-dodo
 
   unit-tests:
     name: Unit Tests
@@ -49,6 +53,10 @@ jobs:
       - name: Run unit tests
         working-directory: rust
         run: cargo test -p cloudless_core --lib
+
+      - name: Run api_server unit tests (including billing-dodo adapter)
+        working-directory: rust
+        run: cargo test -p api_server --lib --features billing-dodo
 
   integration-tests:
     name: Integration Tests (E2E)

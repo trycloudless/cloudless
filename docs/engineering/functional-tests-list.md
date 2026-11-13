@@ -441,6 +441,7 @@ This section maps supported product features to the tests that currently protect
 ### API Server
 
 #### DoDo Webhook (`rust/api_server/src/infra/dodo/webhook.rs`)
+Requires the `billing-dodo` feature: `cargo test -p api_server --lib --features billing-dodo`.
 - **test_valid_signature**: correctly signed payload accepted
 - **test_wrong_signature_rejected**: tampered payload rejected
 - **test_stale_timestamp_rejected**: old timestamp rejected (replay protection)

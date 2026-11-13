@@ -14,8 +14,11 @@ use crate::{
             payment_webhook::{PaymentEvent, PaymentWebhookVerifier, VerifiedPaymentEvent},
         },
     },
-    infra::{billing::disabled::DisabledPaymentProvider, dodo::client::DodoClient},
+    infra::billing::disabled::DisabledPaymentProvider,
 };
+
+#[cfg(feature = "billing-dodo")]
+use crate::infra::dodo::client::DodoClient;
 
 /// Top-level billing discriminant.
 ///
@@ -25,6 +28,8 @@ use crate::{
 #[derive(Clone)]
 pub enum BillingAdapter {
     /// Hosted deployment — all billing features active.
+    /// Only compiled with the `billing-dodo` feature.
+    #[cfg(feature = "billing-dodo")]
     Dodo(DodoClient),
     /// Self-hosted deployment — billing features disabled; all methods return errors.
     Disabled(DisabledPaymentProvider),
@@ -41,6 +46,7 @@ impl PaymentProvider for BillingAdapter {
         params: CreateCheckoutParams,
     ) -> CoreResult<CheckoutResult> {
         match self {
+            #[cfg(feature = "billing-dodo")]
             BillingAdapter::Dodo(c) => c.create_checkout_session(params).await,
             BillingAdapter::Disabled(d) => d.create_checkout_session(params).await,
         }
@@ -48,6 +54,7 @@ impl PaymentProvider for BillingAdapter {
 
     async fn create_customer_portal_session(&self, customer_id: &str) -> CoreResult<String> {
         match self {
+            #[cfg(feature = "billing-dodo")]
             BillingAdapter::Dodo(c) => c.create_customer_portal_session(customer_id).await,
             BillingAdapter::Disabled(d) => d.create_customer_portal_session(customer_id).await,
         }
@@ -58,6 +65,7 @@ impl PaymentProvider for BillingAdapter {
         provider_subscription_id: &str,
     ) -> CoreResult<ProviderSubscriptionState> {
         match self {
+            #[cfg(feature = "billing-dodo")]
             BillingAdapter::Dodo(c) => c.fetch_subscription(provider_subscription_id).await,
             BillingAdapter::Disabled(d) => d.fetch_subscription(provider_subscription_id).await,
         }
@@ -75,6 +83,7 @@ impl PaymentWebhookVerifier for BillingAdapter {
         raw_body: &[u8],
     ) -> CoreResult<VerifiedPaymentEvent> {
         match self {
+            #[cfg(feature = "billing-dodo")]
             BillingAdapter::Dodo(c) => c.verify_and_parse(headers, raw_body),
             BillingAdapter::Disabled(d) => d.verify_and_parse(headers, raw_body),
         }
@@ -86,6 +95,7 @@ impl PaymentWebhookVerifier for BillingAdapter {
         payload: serde_json::Value,
     ) -> CoreResult<PaymentEvent> {
         match self {
+            #[cfg(feature = "billing-dodo")]
             BillingAdapter::Dodo(c) => c.parse_stored_event(event_type, payload),
             BillingAdapter::Disabled(d) => d.parse_stored_event(event_type, payload),
         }
