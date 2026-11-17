@@ -242,6 +242,7 @@ Set the variables as environment variables before building. They are baked into 
 
 ```bash
 export GOOGLE_CLIENT_ID=your_google_client_id
+export GOOGLE_CLIENT_SECRET=your_google_client_secret  # required by Google for Desktop app clients
 export ONEDRIVE_CLIENT_ID=your_microsoft_application_id
 export API_BASE_URL=https://your-api-server.example.com
 
@@ -253,6 +254,7 @@ For local development, put these in `rust/tauri/.env`:
 
 ```dotenv
 GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
 ONEDRIVE_CLIENT_ID=your_microsoft_application_id
 API_BASE_URL=http://localhost:9000
 ```
