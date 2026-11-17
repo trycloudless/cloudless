@@ -25,6 +25,7 @@ use api_types::remote_storage::{
     RemoteStorageStatus, RemoteStorageSummary, RemoteStorageType,
 };
 use api_types::subscription::{SubscriptionResponse, SubscriptionStatus, SubscriptionTier};
+use leptos::portal::Portal;
 use leptos::prelude::*;
 use serde::{Deserialize, Serialize};
 use shared_ui::theme;
@@ -3283,6 +3284,7 @@ fn RecoveryKeyModal(
     }
 
     view! {
+        <Portal>
         // Modal overlay
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
             <div class="bg-surface border border-border rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
@@ -3517,6 +3519,7 @@ fn RecoveryKeyModal(
                 </div>
             </div>
         </div>
+        </Portal>
     }
 }
 
@@ -3601,6 +3604,7 @@ fn ChangePasswordModal(on_close: Callback<()>) -> impl IntoView {
     let input_class = "w-full bg-input border border-border rounded-xl px-4 py-2.5 pr-10 text-text-primary text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-tint transition-all";
 
     view! {
+        <Portal>
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
             <div class="bg-surface border border-border rounded-2xl shadow-2xl w-full max-w-md">
                 // Header
@@ -3716,6 +3720,7 @@ fn ChangePasswordModal(on_close: Callback<()>) -> impl IntoView {
                 </div>
             </div>
         </div>
+        </Portal>
     }
 }
 

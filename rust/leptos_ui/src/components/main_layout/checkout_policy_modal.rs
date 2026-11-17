@@ -1,6 +1,7 @@
 use crate::components::common::{tauri_invoke, tauri_invoke_no_args};
 use crate::state::SessionSignal;
 use api_types::policy::{AcceptPolicyRequest, GetCheckoutPolicyResponse, PendingPolicyResponse};
+use leptos::portal::Portal;
 use leptos::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 
@@ -68,7 +69,11 @@ pub fn CheckoutPolicyModal(
         });
     };
 
+    // Rendered into <body> via a portal: the Settings cards use `backdrop-filter`
+    // (`.glass`), which makes `position: fixed` relative to the card instead of
+    // the viewport, so an in-place overlay would be clipped and covered by later cards.
     view! {
+        <Portal>
         {move || {
             // Still loading — show backdrop with spinner
             if policy.get().is_none() {
@@ -146,5 +151,6 @@ pub fn CheckoutPolicyModal(
                 </div>
             }.into_any()
         }}
+        </Portal>
     }
 }
