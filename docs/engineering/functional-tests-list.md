@@ -515,6 +515,10 @@ Requires the `billing-dodo` feature: `cargo test -p api_server --lib --features 
 #### Google Drive OAuth (`rust/tauri/src/google_auth.rs`)
 - **token_form_omits_secret_when_absent**: token exchange is PKCE-only when no client secret is configured
 - **token_form_includes_secret_when_present**: configured client secret is sent (Google requires it for Desktop app clients)
+- **drive_scope_present_is_not_missing**: sign-in with all requested scopes passes the Drive scope check
+- **drive_scope_unticked_is_missing**: unticking the Drive box on Google's consent screen is detected and shown as a clear error
+- **drive_scope_requires_exact_match**: a similar-looking scope does not count as `drive.file`
+- **drive_scope_absent_field_is_not_missing**: a token response with no `scope` field is not blocked
 
 ### API Types
 
