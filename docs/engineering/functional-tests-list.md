@@ -500,6 +500,11 @@ Requires the `billing-dodo` feature: `cargo test -p api_server --lib --features 
 #### API Server Config (`rust/api_server/src/config.rs`)
 - **test_defaults_are_applied**: default config values correct when env vars absent
 
+#### Password Reset Application (`rust/api_server/src/core/password_reset/application.rs`)
+- **default_template_renders_variables**: built-in default reset email (used when no `password_reset` template exists) renders `user_name` and `reset_link`
+- **custom_template_renders_variables**: admin-authored templates render the same variables
+- **invalid_template_is_an_error**: invalid Tera syntax returns an error instead of sending a broken email
+
 #### Remote File Version API Application (`rust/api_server/src/core/remote_file_version/application.rs`)
 - **test_list_all_versions_free_tier_passes_cutoff_timestamp**: Free tier version list applies the retention cutoff
 - **test_list_all_versions_paid_tier_passes_none**: paid tier version list does not apply the Free tier cutoff
