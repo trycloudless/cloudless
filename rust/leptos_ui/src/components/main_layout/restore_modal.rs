@@ -4,6 +4,7 @@ use api_types::remote_storage::{
     ListRemoteStoragesResponse, RemoteStorageStatus, RemoteStorageSummary,
 };
 use api_types::restore_job::{OverwriteBehavior, RestoreDestination};
+use leptos::portal::Portal;
 use leptos::prelude::*;
 use serde::Serialize;
 use uuid::Uuid;
@@ -59,8 +60,8 @@ pub fn RestoreModal(
 
     let total_files = selections.len();
     let total_size: i64 = selections.iter().map(|s| s.size).sum();
-    let total_size_str = format_bytes(total_size as u64);
-    let total_size_str_confirm = total_size_str.clone();
+    // StoredValue (Copy) so the portal children closure can be re-run.
+    let total_size_str = StoredValue::new(format_bytes(total_size as u64));
 
     // Build DTOs once, store for reuse across reactive closures
     let file_selection_dtos: Vec<RestoreFileSelectionDto> = selections
@@ -145,6 +146,7 @@ pub fn RestoreModal(
     };
 
     view! {
+        <Portal>
         // Backdrop
         <div
             class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
@@ -197,7 +199,7 @@ pub fn RestoreModal(
                         };
                         let is_overwrite = overwrite.get() == "overwrite";
                         let is_configured_storage = destination.get() == "configured_storage";
-                        let total_size_str = total_size_str_confirm.clone();
+                        let total_size_str = total_size_str.get_value();
 
                         view! {
                             <form on:submit=move |ev: leptos::ev::SubmitEvent| {
@@ -281,7 +283,7 @@ pub fn RestoreModal(
                         }.into_any()
                     } else {
                         // ── Phase 1: Configuration Form ──
-                        let total_size_str = total_size_str.clone();
+                        let total_size_str = total_size_str.get_value();
 
                         view! {
                             <form on:submit=move |ev: leptos::ev::SubmitEvent| {
@@ -502,6 +504,7 @@ pub fn RestoreModal(
                 }}
             </div>
         </div>
+        </Portal>
     }
 }
 
