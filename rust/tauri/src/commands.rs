@@ -1052,7 +1052,6 @@ pub async fn add_google_drive_storage(
 ) -> TauriResult<CreateRemoteStorageResponse> {
     tracing::info!("Starting Google Drive storage setup: {}", storage_name);
 
-    // No client secret needed — Google Desktop app type uses PKCE only.
     let client_id = std::env::var("GOOGLE_CLIENT_ID")
         .or_else(|_| {
             option_env!("GOOGLE_CLIENT_ID")
@@ -1064,8 +1063,13 @@ pub async fn add_google_drive_storage(
         })?;
 
     // 1. Run OAuth flow (opens browser, waits for callback)
-    let creds =
-        crate::google_auth::google_drive_oauth_flow(&app, &client_id).await?;
+    let client_secret = crate::google_auth::google_client_secret();
+    let creds = crate::google_auth::google_drive_oauth_flow(
+        &app,
+        &client_id,
+        client_secret.as_deref(),
+    )
+    .await?;
 
     // 2. Get DEK for encryption
     let dek = state
@@ -1148,10 +1152,19 @@ pub async fn reauth_google_drive_storage(
         }
     };
 
-    // 2. Run OAuth flow (PKCE only — no client secret required for Desktop app type)
+    // 2. Run OAuth flow. Prefer the secret stored with the storage (matches its
+    //    client_id); fall back to the build-time secret for older storages.
     let client_id = existing_gdrive.client_id.clone();
-    let new_creds =
-        crate::google_auth::google_drive_oauth_flow(&app, &client_id).await?;
+    let client_secret = existing_gdrive
+        .client_secret
+        .clone()
+        .or_else(crate::google_auth::google_client_secret);
+    let new_creds = crate::google_auth::google_drive_oauth_flow(
+        &app,
+        &client_id,
+        client_secret.as_deref(),
+    )
+    .await?;
 
     // 3. Client-side identity verification
     // Compare the new google_user_id with the stored one.
@@ -1177,7 +1190,7 @@ pub async fn reauth_google_drive_storage(
     // 4. Build updated credentials — preserve root_folder_id from original config
     let updated_creds = GoogleDriveCredentials {
         client_id,
-        client_secret: None,
+        client_secret,
         refresh_token: new_creds.refresh_token,
         root_folder_id: existing_gdrive.root_folder_id,
         google_user_id: new_creds.google_user_id.or(existing_gdrive.google_user_id),

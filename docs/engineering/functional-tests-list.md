@@ -510,6 +510,12 @@ Requires the `billing-dodo` feature: `cargo test -p api_server --lib --features 
 - **test_list_all_versions_paid_tier_passes_none**: paid tier version list does not apply the Free tier cutoff
 - **test_list_all_versions_starter_tier_passes_none**: Starter tier version list keeps full version history
 
+### Tauri
+
+#### Google Drive OAuth (`rust/tauri/src/google_auth.rs`)
+- **token_form_omits_secret_when_absent**: token exchange is PKCE-only when no client secret is configured
+- **token_form_includes_secret_when_present**: configured client secret is sent (Google requires it for Desktop app clients)
+
 ### API Types
 
 #### File Filter (`rust/api_types/src/file_filter.rs`)

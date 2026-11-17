@@ -52,21 +52,56 @@ fn random_url_safe(len: usize) -> String {
     URL_SAFE_NO_PAD.encode(&bytes)
 }
 
+/// Returns the Google OAuth client secret, read from the `GOOGLE_CLIENT_SECRET`
+/// env var at runtime or baked in at build time (via `.env` + `build.rs`).
+/// Empty values are treated as absent.
+pub fn google_client_secret() -> Option<String> {
+    std::env::var("GOOGLE_CLIENT_SECRET")
+        .ok()
+        .or_else(|| option_env!("GOOGLE_CLIENT_SECRET").map(String::from))
+        .filter(|s| !s.trim().is_empty())
+}
+
+/// Builds the authorization-code token exchange form. `client_secret` is
+/// included only when configured.
+fn token_exchange_form<'a>(
+    code: &'a str,
+    client_id: &'a str,
+    client_secret: Option<&'a str>,
+    redirect_uri: &'a str,
+    code_verifier: &'a str,
+) -> Vec<(&'static str, &'a str)> {
+    let mut form = vec![
+        ("code", code),
+        ("client_id", client_id),
+        ("redirect_uri", redirect_uri),
+        ("grant_type", "authorization_code"),
+        ("code_verifier", code_verifier),
+    ];
+    if let Some(secret) = client_secret {
+        form.push(("client_secret", secret));
+    }
+    form
+}
+
 /// Runs the full Google Drive OAuth2 PKCE authorization flow.
 ///
 /// 1. Starts a local HTTP listener on a random port.
 /// 2. Opens the Google consent screen in the user's default browser.
 /// 3. Captures the authorization code from the redirect callback.
-/// 4. Exchanges the code for access + refresh tokens (PKCE only — no client secret).
+/// 4. Exchanges the code for access + refresh tokens (PKCE, plus the client
+///    secret when one is configured).
 /// 5. Creates (or finds) the root backup folder in Google Drive.
 /// 6. Returns [`GoogleDriveCredentials`] ready for encryption and storage.
 ///
-/// Google treats installed/desktop apps as public clients — the client secret
-/// is not required and should not be embedded in distributed binaries.
-/// The OAuth app must be registered as "Desktop app" type in Google Cloud Console.
+/// Google's token endpoint still requires `client_secret` for "Desktop app"
+/// OAuth clients, even with PKCE. For installed apps Google does not treat that
+/// secret as confidential, so it is baked into the binary at build time (see
+/// [`google_client_secret`]). It is sent only when configured.
 pub async fn google_drive_oauth_flow(
     app: &tauri::AppHandle,
     client_id: &str,
+    client_secret: Option<&str>,
 ) -> TauriResult<GoogleDriveCredentials> {
     // ── 1. Generate PKCE pair + state ───────────────────────────────
     let code_verifier = random_url_safe(64);
@@ -210,17 +245,16 @@ pub async fn google_drive_oauth_flow(
 
     // ── 5. Exchange code for tokens ─────────────────────────────────
     let http = reqwest::Client::new();
-    // Desktop app type: no client_secret needed — PKCE (code_verifier) provides
-    // equivalent security per Google's installed-app OAuth guidelines.
+    let form = token_exchange_form(
+        &auth_code,
+        client_id,
+        client_secret,
+        &redirect_uri,
+        &code_verifier,
+    );
     let token_resp = http
         .post(TOKEN_ENDPOINT)
-        .form(&[
-            ("code", auth_code.as_str()),
-            ("client_id", client_id),
-            ("redirect_uri", redirect_uri.as_str()),
-            ("grant_type", "authorization_code"),
-            ("code_verifier", code_verifier.as_str()),
-        ])
+        .form(&form)
         .send()
         .await
         .map_err(|e| TauriError::from(format!("Token exchange request failed: {}", e)))?;
@@ -254,7 +288,7 @@ pub async fn google_drive_oauth_flow(
 
     Ok(GoogleDriveCredentials {
         client_id: client_id.to_owned(),
-        client_secret: None,
+        client_secret: client_secret.map(str::to_owned),
         refresh_token,
         root_folder_id,
         google_user_id: Some(user_info.id),
@@ -378,4 +412,32 @@ fn urldecoded(s: &str) -> String {
             }
         })
         .unwrap_or_else(|| s.to_owned())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Without a configured secret the form is PKCE-only.
+    #[test]
+    fn token_form_omits_secret_when_absent() {
+        let form = token_exchange_form("code", "cid", None, "http://127.0.0.1:1", "verifier");
+        assert!(form.iter().all(|(k, _)| *k != "client_secret"));
+        assert!(form.contains(&("code_verifier", "verifier")));
+        assert!(form.contains(&("grant_type", "authorization_code")));
+    }
+
+    /// Google requires client_secret for Desktop clients; it must be sent when set.
+    #[test]
+    fn token_form_includes_secret_when_present() {
+        let form = token_exchange_form(
+            "code",
+            "cid",
+            Some("s3cret"),
+            "http://127.0.0.1:1",
+            "verifier",
+        );
+        assert!(form.contains(&("client_secret", "s3cret")));
+        assert!(form.contains(&("code_verifier", "verifier")));
+    }
 }
