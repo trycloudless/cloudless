@@ -12,6 +12,31 @@ use argon2::{
 use chrono::{Duration, Utc};
 use tera::Context;
 
+/// Subject used when no `password_reset` template exists in the database.
+pub const DEFAULT_RESET_SUBJECT: &str = "Reset your CloudLess password";
+
+/// Body used when no `password_reset` template exists in the database.
+/// Rendered with Tera; receives `user_name` and `reset_link`.
+pub const DEFAULT_RESET_BODY_HTML: &str = r#"<p>Hi {{ user_name }},</p>
+<p>We received a request to reset your CloudLess password. Click the link below to choose a new one. The link expires in 1 hour.</p>
+<p><a href="{{ reset_link }}">Reset password</a></p>
+<p>If you didn't request this, you can safely ignore this email.</p>
+<p>— The CloudLess team</p>"#;
+
+/// Renders a subject/body pair with Tera. Autoescaping is off because the
+/// body is admin-authored HTML.
+fn render_template(
+    subject: &str,
+    body_html: &str,
+    context: &Context,
+) -> CoreResult<(String, String)> {
+    let subject = tera::Tera::one_off(subject, context, false)
+        .map_err(|e| CoreError::internal_with_source("Template rendering failed", e))?;
+    let body = tera::Tera::one_off(body_html, context, false)
+        .map_err(|e| CoreError::internal_with_source("Template rendering failed", e))?;
+    Ok((subject, body))
+}
+
 /// Handles a password reset request. Generates a token, finds the latest
 /// PasswordReset email template, renders it with Tera, and sends via EmailPort.
 /// Always returns success to prevent email enumeration.
@@ -49,12 +74,23 @@ async fn do_request_reset<E: PasswordResetEnv>(
         .insert(user.id, token_hash, expires_at)
         .await?;
 
-    // 4. Find latest password_reset email template
-    let template = env
+    // 4. Find latest password_reset email template, falling back to the
+    //    built-in default so a fresh install can send reset emails before an
+    //    admin has created a custom template.
+    let (subject, body_html) = match env
         .email_template_repo()
         .get_latest_by_type(EmailTemplateType::PasswordReset)
         .await?
-        .ok_or_else(|| CoreError::internal("No password reset template configured"))?;
+    {
+        Some(t) => (t.subject, t.body_html),
+        None => {
+            tracing::info!("No password reset template configured; using built-in default");
+            (
+                DEFAULT_RESET_SUBJECT.to_string(),
+                DEFAULT_RESET_BODY_HTML.to_string(),
+            )
+        }
+    };
 
     // 5. Render template with Tera
     let reset_link = format!(
@@ -66,10 +102,7 @@ async fn do_request_reset<E: PasswordResetEnv>(
     context.insert("reset_link", &reset_link);
     context.insert("user_name", &user.name);
 
-    let rendered_subject = tera::Tera::one_off(&template.subject, &context, false)
-        .map_err(|e| CoreError::internal_with_source("Template rendering failed", e))?;
-    let rendered_body = tera::Tera::one_off(&template.body_html, &context, false)
-        .map_err(|e| CoreError::internal_with_source("Template rendering failed", e))?;
+    let (rendered_subject, rendered_body) = render_template(&subject, &body_html, &context)?;
 
     // 6. Send email
     env.email_adapter()
@@ -116,4 +149,53 @@ pub async fn confirm_reset<E: PasswordResetEnv>(
     Ok(PasswordResetConfirmResponse {
         message: "Password has been reset successfully.".to_string(),
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn ctx() -> Context {
+        let mut c = Context::new();
+        c.insert(
+            "reset_link",
+            "https://example.test/reset-password?token=abc",
+        );
+        c.insert("user_name", "Ada");
+        c
+    }
+
+    /// The built-in default renders both variables and leaves no Tera syntax behind.
+    #[test]
+    fn default_template_renders_variables() {
+        let (subject, body) =
+            render_template(DEFAULT_RESET_SUBJECT, DEFAULT_RESET_BODY_HTML, &ctx())
+                .expect("render");
+        assert_eq!(subject, "Reset your CloudLess password");
+        assert!(body.contains("Hi Ada,"));
+        assert!(body.contains(r#"href="https://example.test/reset-password?token=abc""#));
+        assert!(!body.contains("{{"));
+    }
+
+    /// Custom (admin-authored) templates render the same variables.
+    #[test]
+    fn custom_template_renders_variables() {
+        let (subject, body) = render_template(
+            "Reset for {{ user_name }}",
+            "<a href=\"{{ reset_link }}\">go</a>",
+            &ctx(),
+        )
+        .expect("render");
+        assert_eq!(subject, "Reset for Ada");
+        assert_eq!(
+            body,
+            r#"<a href="https://example.test/reset-password?token=abc">go</a>"#
+        );
+    }
+
+    /// Invalid Tera syntax surfaces as an error instead of sending a broken email.
+    #[test]
+    fn invalid_template_is_an_error() {
+        assert!(render_template("{{ unclosed", "body", &ctx()).is_err());
+    }
 }
