@@ -14,11 +14,28 @@ const DRIVE_API: &str = "https://www.googleapis.com/drive/v3/files";
 const USERINFO_ENDPOINT: &str = "https://www.googleapis.com/oauth2/v1/userinfo";
 /// OAuth scopes: drive.file for backup storage, openid+email for identity verification during reauth.
 const SCOPE: &str = "https://www.googleapis.com/auth/drive.file openid email";
+/// The scope CloudLess needs to read and write its backup folder.
+const DRIVE_FILE_SCOPE: &str = "https://www.googleapis.com/auth/drive.file";
+/// Shown when the user signs in but leaves the Drive checkbox unticked on Google's consent screen.
+const DRIVE_SCOPE_NOT_GRANTED: &str =
+    "Google Drive access was not granted. Please try again and tick \
+     the box that lets CloudLess see, edit, create and delete the Google Drive files it uses.";
 
 #[derive(Deserialize)]
 struct TokenResponse {
     access_token: String,
     refresh_token: Option<String>,
+    /// Space-separated scopes the user actually granted. Google lets users
+    /// untick individual scopes, so this can be narrower than [`SCOPE`].
+    scope: Option<String>,
+}
+
+/// Returns `true` when the token response shows the Drive scope was not granted.
+///
+/// A missing `scope` field is treated as granted: Google normally includes it,
+/// and if it doesn't, the first Drive call will surface any problem.
+fn drive_scope_missing(granted: Option<&str>) -> bool {
+    granted.is_some_and(|scopes| !scopes.split_whitespace().any(|s| s == DRIVE_FILE_SCOPE))
 }
 
 #[derive(Deserialize)]
@@ -269,6 +286,11 @@ pub async fn google_drive_oauth_flow(
         .await
         .map_err(|e| TauriError::from(format!("Failed to parse token response: {}", e)))?;
 
+    if drive_scope_missing(tokens.scope.as_deref()) {
+        tracing::warn!(granted = ?tokens.scope, "Google Drive scope not granted");
+        return Err(TauriError::from(DRIVE_SCOPE_NOT_GRANTED));
+    }
+
     let refresh_token = tokens
         .refresh_token
         .ok_or_else(|| TauriError::from("No refresh token in response — ensure prompt=consent"))?;
@@ -439,5 +461,32 @@ mod tests {
         );
         assert!(form.contains(&("client_secret", "s3cret")));
         assert!(form.contains(&("code_verifier", "verifier")));
+    }
+
+    /// All requested scopes granted: Drive is available.
+    #[test]
+    fn drive_scope_present_is_not_missing() {
+        let granted = "openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/drive.file";
+        assert!(!drive_scope_missing(Some(granted)));
+    }
+
+    /// User unticked the Drive checkbox: only identity scopes come back.
+    #[test]
+    fn drive_scope_unticked_is_missing() {
+        let granted = "openid https://www.googleapis.com/auth/userinfo.email";
+        assert!(drive_scope_missing(Some(granted)));
+    }
+
+    /// A similar-looking scope must not count as drive.file.
+    #[test]
+    fn drive_scope_requires_exact_match() {
+        let granted = "openid https://www.googleapis.com/auth/drive.file.readonly";
+        assert!(drive_scope_missing(Some(granted)));
+    }
+
+    /// No scope field in the response: don't block, let the Drive call decide.
+    #[test]
+    fn drive_scope_absent_field_is_not_missing() {
+        assert!(!drive_scope_missing(None));
     }
 }
