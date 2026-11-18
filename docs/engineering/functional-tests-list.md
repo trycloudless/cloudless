@@ -520,6 +520,17 @@ Requires the `billing-dodo` feature: `cargo test -p api_server --lib --features 
 - **drive_scope_requires_exact_match**: a similar-looking scope does not count as `drive.file`
 - **drive_scope_absent_field_is_not_missing**: a token response with no `scope` field is not blocked
 
+### Desktop UI (Leptos)
+
+#### Policy Markdown Renderer (`rust/leptos_ui/src/markdown.rs`)
+- **renders_headings_paragraphs_and_lists**: policy markdown renders headings, paragraphs (soft-wrapped lines joined) and lists
+- **raw_html_is_escaped_not_rendered**: raw HTML such as `<script>` or `<img onerror>` is shown as text, never rendered
+- **web_links_open_externally**: http(s) links keep an escaped href and open outside the app window (`target="_blank"`, `rel="noopener noreferrer"`)
+- **mailto_links_are_allowed**: `mailto:` links are kept
+- **unsafe_and_relative_links_lose_their_href**: `javascript:`, `data:` and relative links are rendered without an href
+- **link_href_cannot_break_out_of_attribute**: quotes in a link target cannot inject attributes
+- **images_keep_only_alt_text**: images are not loaded; only their alt text is shown
+
 ### API Types
 
 #### File Filter (`rust/api_types/src/file_filter.rs`)

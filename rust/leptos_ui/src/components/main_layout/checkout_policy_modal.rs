@@ -1,4 +1,5 @@
 use crate::components::common::{tauri_invoke, tauri_invoke_no_args};
+use crate::components::policy_content::PolicyContent;
 use crate::state::SessionSignal;
 use api_types::policy::{AcceptPolicyRequest, GetCheckoutPolicyResponse, PendingPolicyResponse};
 use leptos::portal::Portal;
@@ -125,9 +126,7 @@ pub fn CheckoutPolicyModal(
                                 </div>
                             })}
 
-                            <div class="max-h-64 overflow-y-auto bg-bg rounded-xl p-4 text-sm text-text-secondary whitespace-pre-wrap border border-border-alpha">
-                                {p.content.clone()}
-                            </div>
+                            <PolicyContent content=p.content.clone() />
                         </div>
 
                         // Footer

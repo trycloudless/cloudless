@@ -16,3 +16,5 @@ web-sys = { version = "0.3", features = ["console", "Window", "Request", "Reques
 js-sys = "0.3"
 uuid = { version = "1.19.0", features = ["v7", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }
+pulldown-cmark = { version = "0.12", default-features = false, features = ["html"] }
+pulldown-cmark-escape = "0.11"

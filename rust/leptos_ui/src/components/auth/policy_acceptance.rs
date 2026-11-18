@@ -1,4 +1,5 @@
 use crate::components::common::{tauri_invoke, tauri_invoke_no_args};
+use crate::components::policy_content::PolicyContent;
 use crate::state::*;
 use api_types::policy::{
     AcceptPolicyRequest, AcceptPolicyResponse, GetPendingPoliciesResponse, PendingPolicyResponse,
@@ -170,9 +171,7 @@ pub fn PolicyAcceptance() -> impl IntoView {
                                                 </span>
                                             </div>
 
-                                            <div class="max-h-64 overflow-y-auto bg-bg rounded-xl p-4 mb-4 text-sm text-text-secondary whitespace-pre-wrap border border-border-alpha">
-                                                {policy.content.clone()}
-                                            </div>
+                                            <PolicyContent content=policy.content.clone() class="mb-4" />
 
                                             {if let Some(slug) = policy_slug(&policy.policy_type) {
                                                 let url = format!("{}/legal/{}", WEBSITE_BASE_URL, slug);
